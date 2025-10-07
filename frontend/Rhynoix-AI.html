@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF--8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Rhyniox AI</title>
+    <style>
+      body {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(
+          180deg,
+          #0a0a1a 0%,
+          #1a1a2e 30%,
+          #000000 100%
+        );
+        color: white;
+        height: 100vh;
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* Background container */
+      #background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+
+      /* NEW: Keyframes for animated day sky */
+      @keyframes day-cycle {
+        0% {
+          background-position: 0% 0%;
+        }
+        50% {
+          background-position: 0% 100%;
+        }
+        100% {
+          background-position: 0% 0%;
+        }
+      }
+
+      /* MODIFIED: Morning sky styles with animated gradient */
+      .morning-sky {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          180deg,
+          #0b3d91,
+          /* Deep Blue (Pre-dawn) */ #ff7e5f,
+          /* Sunrise Orange */ #fec471,
+          /* Sunrise Yellow */ #87ceeb,
+          /* Midday Sky Blue */ #fec471,
+          /* Sunset Yellow */ #ff7e5f,
+          /* Sunset Orange */ #0b3d91 /* Deep Blue (Dusk) */
+        );
+        background-size: 100% 400%;
+        animation: day-cycle 120s linear infinite;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* Sun */
+      .sun {
+        position: absolute;
+        top: 15%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 120px;
+        background: radial-gradient(circle, #ffd700, #ffa500, #ff8c00);
+        border-radius: 50%;
+        box-shadow: 0 0 60px rgba(255, 215, 0, 0.6),
+          0 0 120px rgba(255, 215, 0, 0.3);
+        animation: sun-glow 3s ease-in-out infinite;
+      }
+
+      @keyframes sun-glow {
+        0%,
+        100% {
+          box-shadow: 0 0 50px rgba(255, 215, 0, 0.6),
+            0 0 100px rgba(255, 215, 0, 0.3);
+          transform: translateX(-50%) scale(1);
+        }
+        50% {
+          box-shadow: 0 0 70px rgba(255, 215, 0, 0.8),
+            0 0 140px rgba(255, 215, 0, 0.4);
+          transform: translateX(-50%) scale(1.05);
+        }
+      }
+
+      /* Morning clouds */
+      .morning-cloud {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 50px;
+        opacity: 0.9;
+        animation: morning-drift 25s linear infinite;
+      }
+
+      .morning-cloud::before,
+      .morning-cloud::after {
+        content: "";
+        position: absolute;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 50px;
+      }
+
+      .morning-cloud.morning-cloud1 {
+        width: 120px;
+        height: 40px;
+        top: 15%;
+        left: -150px;
+      }
+
+      .morning-cloud.morning-cloud1::before {
+        width: 80px;
+        height: 50px;
+        top: -20px;
+        left: 20px;
+      }
+
+      .morning-cloud.morning-cloud1::after {
+        width: 90px;
+        height: 45px;
+        top: -15px;
+        right: 20px;
+      }
+
+      .morning-cloud.morning-cloud2 {
+        width: 140px;
+        height: 50px;
+        top: 35%;
+        left: -170px;
+        animation-delay: -12s;
+        animation-duration: 30s;
+      }
+
+      .morning-cloud.morning-cloud2::before {
+        width: 90px;
+        height: 60px;
+        top: -25px;
+        left: 25px;
+      }
+
+      .morning-cloud.morning-cloud2::after {
+        width: 100px;
+        height: 55px;
+        top: -20px;
+        right: 25px;
+      }
+
+      .morning-cloud.morning-cloud3 {
+        width: 100px;
+        height: 35px;
+        top: 55%;
+        left: -120px;
+        animation-delay: -20s;
+        animation-duration: 35s;
+      }
+
+      .morning-cloud.morning-cloud3::before {
+        width: 70px;
+        height: 40px;
+        top: -15px;
+        left: 15px;
+      }
+
+      .morning-cloud.morning-cloud3::after {
+        width: 75px;
+        height: 38px;
+        top: -12px;
+        right: 15px;
+      }
+
+      @keyframes morning-drift {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(calc(100vw + 200px));
+        }
+      }
+
+      /* Night sky background */
+      .night-sky {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* Moon */
+      .moon {
+        position: absolute;
+        top: 15%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 120px;
+        background: radial-gradient(
+          circle at 30% 30%,
+          #ffffff,
+          #f0f0f0,
+          #e0e0e0
+        );
+        border-radius: 50%;
+        box-shadow: 0 0 60px rgba(255, 255, 255, 0.4),
+          0 0 120px rgba(255, 255, 255, 0.2);
+        animation: moon-glow 4s ease-in-out infinite;
+      }
+
+      @keyframes moon-glow {
+        0%,
+        100% {
+          box-shadow: 0 0 60px rgba(255, 255, 255, 0.4),
+            0 0 120px rgba(255, 255, 255, 0.2);
+          transform: translateX(-50%) scale(1);
+        }
+        50% {
+          box-shadow: 0 0 80px rgba(255, 255, 255, 0.6),
+            0 0 160px rgba(255, 255, 255, 0.3);
+          transform: translateX(-50%) scale(1.05);
+        }
+      }
+
+      /* Stars */
+      .star {
+        position: absolute;
+        background: white;
+        border-radius: 50%;
+        animation: twinkle 3s ease-in-out infinite;
+      }
+      .star.small {
+        width: 2px;
+        height: 2px;
+      }
+      .star.medium {
+        width: 3px;
+        height: 3px;
+      }
+      .star.large {
+        width: 4px;
+        height: 4px;
+      }
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.2);
+        }
+      }
+
+      /* Clouds */
+      .cloud {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50px;
+        opacity: 0.6;
+        animation: drift 20s linear infinite;
+      }
+
+      .cloud::before,
+      .cloud::after {
+        content: "";
+        position: absolute;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50px;
+      }
+
+      .cloud.cloud1 {
+        width: 80px;
+        height: 30px;
+        top: 25%;
+        left: -100px;
+      }
+      .cloud.cloud1::before {
+        width: 50px;
+        height: 40px;
+        top: -15px;
+        left: 10px;
+      }
+      .cloud.cloud1::after {
+        width: 60px;
+        height: 35px;
+        top: -10px;
+        right: 10px;
+      }
+
+      .cloud.cloud2 {
+        width: 100px;
+        height: 40px;
+        top: 40%;
+        left: -120px;
+        animation-delay: -10s;
+        animation-duration: 25s;
+      }
+      .cloud.cloud2::before {
+        width: 60px;
+        height: 50px;
+        top: -20px;
+        left: 15px;
+      }
+      .cloud.cloud2::after {
+        width: 70px;
+        height: 45px;
+        top: -15px;
+        right: 15px;
+      }
+
+      .cloud.cloud3 {
+        width: 60px;
+        height: 25px;
+        top: 60%;
+        left: -80px;
+        animation-delay: -15s;
+        animation-duration: 30s;
+      }
+      .cloud.cloud3::before {
+        width: 40px;
+        height: 30px;
+        top: -10px;
+        left: 8px;
+      }
+      .cloud.cloud3::after {
+        width: 45px;
+        height: 28px;
+        top: -8px;
+        right: 8px;
+      }
+
+      @keyframes drift {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(calc(100vw + 200px));
+        }
+      }
+
+      /* Top navigation */
+      .nav-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+        z-index: 100;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .nav-title {
+        font-size: 20px;
+        font-weight: 600;
+        background: linear-gradient(135deg, #60a5fa, #93c5fd, #dbeafe);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        flex: 1;
+        text-align: center;
+      }
+
+      /* Main content area */
+      .main-content {
+        position: fixed;
+        top: 60px;
+        bottom: 260px; /* Increased bottom to make space for the mic */
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        padding: 0 20px;
+      }
+
+      /* Status display */
+      .status-display {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 20;
+        text-align: center;
+        min-height: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .status-text {
+        font-family: 'Arial', sans-serif;
+        font-size: 24px;
+        font-weight: bold;
+        color: #ffffff;
+        margin-bottom: 10px;
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+        max-width: 90vw;
+        word-wrap: break-word;
+        white-space: normal;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        word-spacing: 3px;
+      }
+
+      .day-mode .status-text {
+        color: #000;
+        text-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+      }
+
+      .night-mode .status-text {
+        color: #f0f0f0;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+      }
+
+      .typing-dots {
+        display: none;
+        font-size: 24px;
+        color: white;
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+        animation: star-pulse 1.5s infinite;
+      }
+
+      @keyframes star-pulse {
+        0%,
+        100% {
+          opacity: 0.4;
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        50% {
+          opacity: 1;
+          text-shadow: 0 0 20px rgba(255, 255, 255, 1);
+        }
+      }
+
+      /* Microphone button - CONSOLIDATED & RESPONSIVE */
+      .mic-container {
+        position: fixed;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 200;
+      }
+
+      .mic-button {
+        width: 300px;
+        height: 300px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 2;
+        right: 20px;
+      }
+
+      .mic-button lottie-player {
+        width: 100% !important;
+        height: 100% !important;
+        filter: drop-shadow(0 4px 20px rgba(96, 165, 250, 0.4));
+      }
+      .mic-button:hover {
+        transform: scale(1.1);
+      }
+
+      .mic-button:hover lottie-player {
+        filter: drop-shadow(0 6px 30px rgba(96, 165, 250, 0.6));
+      }
+
+      .mic-button.listening lottie-player {
+        filter: drop-shadow(0 4px 20px rgba(16, 185, 129, 0.6));
+        animation: listening-glow 2s infinite;
+      }
+      .mic-button.speaking lottie-player {
+        filter: drop-shadow(0 4px 20px rgba(96, 165, 250, 0.8));
+        animation: speaking-pulse 0.5s infinite;
+      }
+
+      .mic-button.continuous-mode {
+        border-radius: 50%;
+        border: 3px solid rgba(16, 185, 129, 0.5);
+      }
+
+      .mic-button.continuous-mode::before {
+        content: "LIVE";
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: bold;
+        animation: pulse-live 2s infinite;
+      }
+
+      @keyframes pulse-live {
+        0%,
+        100% {
+          opacity: 0.8;
+          transform: translateX(-50%) scale(1);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(-50%) scale(1.1);
+        }
+      }
+
+      @keyframes listening-glow {
+        0%,
+        100% {
+          filter: drop-shadow(0 4px 20px rgba(16, 185, 129, 0.6));
+          transform: scale(1);
+        }
+        50% {
+          filter: drop-shadow(0 8px 40px rgba(16, 185, 129, 0.9));
+          transform: scale(1.05);
+        }
+      }
+
+      @keyframes speaking-pulse {
+        0%,
+        100% {
+          filter: drop-shadow(0 4px 20px rgba(96, 165, 250, 0.8));
+          transform: scale(1);
+        }
+        50% {
+          filter: drop-shadow(0 8px 40px rgba(96, 165, 250, 1));
+          transform: scale(1.1);
+        }
+      }
+
+      /* Bottom navigation */
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 80px;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        z-index: 100;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .nav-button {
+        background: none;
+        border: none;
+        color: #60a5fa;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        width: 80px; /* Give buttons a fixed width for better spacing */
+      }
+
+      .nav-button:hover {
+        background: rgba(96, 165, 250, 0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(96, 165, 250, 0.2);
+      }
+
+      .nav-button span {
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        position: relative;
+        background: rgba(26, 26, 46, 0.85);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 20px;
+        width: 90%;
+        max-width: 400px;
+        max-height: 80vh; /* Changed to 80vh */
+        display: flex; /* Flexbox for better internal layout */
+        flex-direction: column;
+        border: 1px solid rgba(96, 165, 250, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+          0 0 40px rgba(96, 165, 250, 0.1);
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
+      }
+
+      .modal-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #60a5fa;
+        text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+      }
+
+      .close-button {
+        background: none;
+        border: none;
+        color: #60a5fa;
+        font-size: 24px;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 5px;
+      }
+
+      .close-button:hover {
+        background: rgba(96, 165, 250, 0.15);
+        box-shadow: 0 0 15px rgba(96, 165, 250, 0.3);
+      }
+
+      /* Content inside modals that should scroll */
+      #historyContent,
+      #deleteContent,
+      #voiceList {
+        overflow-y: auto;
+      }
+
+      /* Voice Modal Styles */
+      .voice-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .voice-item {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid transparent;
+        border-left: 3px solid #60a5fa;
+        padding: 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .voice-item:hover {
+        background: rgba(96, 165, 250, 0.15);
+        border-color: rgba(96, 165, 250, 0.5);
+      }
+      .voice-item.selected {
+        background: rgba(96, 165, 250, 0.25);
+        border-left: 3px solid #10b981; /* Green for selected */
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+      }
+      .voice-item .voice-name {
+        font-weight: 600;
+        color: #dbeafe;
+      }
+      .voice-item .voice-lang {
+        font-size: 12px;
+        color: #93c5fd;
+      }
+
+      .history-item {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-left: 3px solid #60a5fa;
+        box-shadow: 0 2px 10px rgba(96, 165, 250, 0.1);
+      }
+
+      .history-user {
+        color: #60a5fa;
+        font-weight: 600;
+        margin-bottom: 5px;
+        text-shadow: 0 0 8px rgba(96, 165, 250, 0.3);
+      }
+
+      .history-ai {
+        color: #ccc;
+        font-size: 14px;
+      }
+
+      .history-controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        flex-shrink: 0;
+      }
+
+      .control-button {
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(96, 165, 250, 0.2);
+      }
+
+      .control-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4);
+      }
+
+      .control-button.danger {
+        background: linear-gradient(135deg, #ff4757, #ff3742);
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .checkbox-item input[type="checkbox"] {
+        margin-top: 5px;
+        accent-color: #40e0ff;
+      }
+
+      .empty-history {
+        text-align: center;
+        color: #666;
+        font-style: italic;
+        padding: 40px 20px;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .mic-button {
+          width: 250px;
+          height: 250px;
+        }
+        .mic-button.continuous-mode::before {
+          top: 5px;
+        }
+        body {
+          overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        /* Ensure night sky elements are visible on mobile */
+        .night-sky {
+          z-index: 1 !important;
+        }
+        .star {
+          z-index: 2;
+        }
+        .cloud {
+          z-index: 3;
+        }
+        .moon {
+          z-index: 4;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .main-content {
+          bottom: 140px; /* Move content up to make room for larger mic */
+          padding: 0 10px;
+        }
+        .mic-button {
+          width: 200px; /* Increased from 140px */
+          height: 200px; /* Increased from 140px */
+          right: 0; /* Remove right offset on mobile */
+        }
+        .mic-container {
+          bottom: 50px; /* Moved up from 15px */
+        }
+        .nav-button {
+          font-size: 18px;
+          width: 70px;
+          padding: 8px;
+        }
+        .nav-button span {
+          font-size: 9px;
+        }
+        .modal-content {
+          width: 95%;
+          padding: 15px;
+          max-height: 85vh;
+        }
+        /* Hide tree animation on mobile */
+        #treeContainer {
+          display: none !important;
+        }
+        body {
+          overflow: hidden; /* Prevent any scroll on mobile */
+          position: fixed; /* Prevent page expansion */
+          width: 100%;
+          height: 100%;
+        }
+        .bottom-nav {
+          height: 70px; /* Reduce bottom nav height on mobile */
+        }
+        /* Ensure proper background in night mode on mobile */
+        #background {
+          background: transparent;
+        }
+        .night-sky {
+          background: linear-gradient(
+            180deg,
+            #0a0a1a 0%,
+            #1a1a2e 30%,
+            #000000 100%
+          ) !important;
+        }
+        /* Ensure stars are visible and twinkling on mobile */
+        .star {
+          display: block !important;
+          opacity: 1 !important;
+          animation: twinkle 3s ease-in-out infinite !important;
+        }
+        /* Ensure clouds are visible and moving on mobile */
+        .cloud {
+          display: block !important;
+          opacity: 0.6 !important;
+        }
+        /* Make moon more visible on mobile */
+        .moon {
+          width: 100px;
+          height: 100px;
+          top: 10%;
+        }
+        .nav-title {
+          font-size: 22px !important;
+          white-space: nowrap;
+        }
+        .status-text {
+          font-size: 18px;
+          word-spacing: 2px;
+        }
+      }
+
+      /* Name Modal Styles */
+      .name-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 2000;
+        backdrop-filter: blur(10px);
+        align-items: center;
+        justify-content: center;
+      }
+
+      .name-modal-content {
+        background: rgba(26, 26, 46, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 30px;
+        width: 90%;
+        max-width: 400px;
+        border: 1px solid rgba(96, 165, 250, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+          0 0 40px rgba(96, 165, 250, 0.1);
+        text-align: center;
+      }
+
+      .name-modal h2 {
+        color: #60a5fa;
+        margin-bottom: 20px;
+        font-size: 24px;
+        text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+      }
+
+      .name-input {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid rgba(96, 165, 250, 0.3);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 16px;
+        margin-bottom: 20px;
+        outline: none;
+        transition: all 0.3s ease;
+        margin-left: -15px;
+      }
+
+      .name-input:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 15px rgba(96, 165, 250, 0.3);
+      }
+
+      .name-submit {
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        border: none;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+      }
+
+      .name-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4);
+      }
+
+      .toggle {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 30px;
+        border-radius: 30px;
+        cursor: pointer;
+      }
+
+      .toggle-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #c0e6f6;
+        border-radius: 30px;
+        border: 2px solid #81c0d5;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .toggle-switch {
+        position: relative;
+        width: 24px;
+        height: 24px;
+        margin: 2px;
+        background-color: #f5eb42;
+        border: 2px solid #e4c74d;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
+
+      /* Decorative cloud (day) and crater (night) details - scaled for small switch */
+      .toggle-switch-figure {
+        position: absolute;
+        bottom: 2px;
+        left: 2px;
+        display: block;
+        width: 16px;
+        height: 8px;
+        border-radius: 8px;
+        background-color: #fff;
+        border: 2px solid #d4d4d2;
+        transform: scale(0.8);
+        transform-origin: center;
+        transition: all 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+      .toggle-switch-figure:before,
+      .toggle-switch-figure:after {
+        content: "";
+        position: absolute;
+        background-color: #fff;
+        border: 2px solid #d4d4d2;
+        border-radius: 100%;
+      }
+      .toggle-switch-figure:before {
+        width: 6px;
+        height: 6px;
+        top: -4px;
+        left: 2px;
+      }
+      .toggle-switch-figure:after {
+        width: 4px;
+        height: 4px;
+        top: -3px;
+        left: 8px;
+      }
+
+      .toggle-switch-figureAlt {
+        position: absolute;
+        top: 6px;
+        left: 8px;
+        width: 3px;
+        height: 3px;
+        background-color: #efeeda;
+        border-radius: 50%;
+        border: 1px solid #dee1c5;
+        box-shadow:
+          6px -1px 0 -0.5px #fcfcfc,
+          10px -2px 0 -0.5px #fcfcfc,
+          8px 1px 0 -1px #fcfcfc;
+        transform: scale(0);
+        transform-origin: center;
+        transition: all 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      /* When switching to night, hide cloud and reveal moon craters */
+      .toggle-input:checked ~ .toggle-switch .toggle-switch-figure {
+        opacity: 0;
+        transform: scale(0.1);
+      }
+      .toggle-input:checked ~ .toggle-switch .toggle-switch-figureAlt {
+        transform: scale(1);
+      }
+
+      /* Checked (Night mode) */
+      .toggle-input:checked ~ .toggle-bg {
+        background-color: #484848;
+        border-color: #202020;
+      }
+      .toggle-input:checked ~ .toggle-switch {
+        margin-left: 32px;
+        background-color: #fffdf2;
+        border-color: #dee1c5;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="background">
+      <div class="night-sky" id="nightSky" style="display: none">
+        <div class="moon" id="moon"></div>
+        <div class="cloud cloud1"></div>
+        <div class="cloud cloud2"></div>
+        <div class="cloud cloud3"></div>
+      </div>
+
+      <div class="morning-sky" id="morningSky" style="display: none">
+        <div class="sun" id="sun"></div>
+        <div class="morning-cloud morning-cloud1"></div>
+        <div class="morning-cloud morning-cloud2"></div>
+        <div class="morning-cloud morning-cloud3"></div>
+        <div
+          id="treeContainer"
+          style="
+            position: fixed;
+            left: -200px;
+            bottom: 250px;
+            width: 340px;
+            height: 500px;
+            z-index: 5;
+            pointer-events: none;
+          "
+        >
+          <lottie-player
+            id="treeLottie"
+            src="../Lottie-files/Tree in the wind.json"
+            background="transparent"
+            speed="1"
+            style="width: 760px; height: 950px; top: 60px"
+            loop
+            autoplay
+          ></lottie-player>
+        </div>
+        <div
+          id="birdContainer1"
+          style="
+            position: absolute;
+            top: 20%;
+            left: -200px;
+            width: 180px;
+            height: 120px;
+            z-index: 3;
+            pointer-events: none;
+            transform: scaleX(-1);
+          "
+        >
+          <lottie-player
+            id="birdLottie1"
+            src="../Lottie-files/birds-flying.json"
+            background="transparent"
+            speed="0.5"
+            style="width: 180px; height: 120px"
+            loop
+            autoplay
+          ></lottie-player>
+        </div>
+        <div
+          id="birdContainer2"
+          style="
+            position: absolute;
+            top: 10%;
+            left: -200px;
+            width: 140px;
+            height: 90px;
+            z-index: 3;
+            pointer-events: none;
+            transform: scaleX(-1);
+          "
+        >
+          <lottie-player
+            id="birdLottie2"
+            src="../Lottie-files/birds-flying.json"
+            background="transparent"
+            speed="0.6"
+            style="width: 140px; height: 90px"
+            loop
+            autoplay
+          ></lottie-player>
+        </div>
+        <div
+          id="birdContainer3"
+          style="
+            position: absolute;
+            top: 15%;
+            left: -200px;
+            width: 100px;
+            height: 65px;
+            z-index: 3;
+            pointer-events: none;
+            transform: scaleX(-1);
+          "
+        >
+          <lottie-player
+            id="birdLottie3"
+            src="../Lottie-files/birds-flying.json"
+            background="transparent"
+            speed="0.7"
+            style="width: 100px; height: 65px"
+            loop
+            autoplay
+          ></lottie-player>
+        </div>
+        <div
+          id="birdContainer4"
+          style="
+            position: absolute;
+            top: 20%;
+            left: -200px;
+            width: 120px;
+            height: 80px;
+            z-index: 3;
+            pointer-events: none;
+            transform: scaleX(-1);
+          "
+        >
+          <lottie-player
+            id="birdLottie4"
+            src="../Lottie-files/birds-flying.json"
+            background="transparent"
+            speed="0.55"
+            style="width: 120px; height: 80px"
+            loop
+            autoplay
+          ></lottie-player>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-bar">
+  <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center;">
+    <img src="../Lottie-files/rhynoix.png" alt="Rhyniox AI" style="height: 80px; width: 80px; vertical-align: middle; display: inline-block; margin-top:15px" />
+    <div class="nav-title" style="font-size: 33px; margin-left: -10px; display: inline-block; vertical-align: middle; text-align: left;">Rhyniox AI</div>
+  </div>
+  <div class="theme-wrapper" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
+    <label class="toggle">
+      <input class="toggle-input" type="checkbox" id="themeToggle" />
+      <div class="toggle-bg"></div>
+      <div class="toggle-switch">
+        <div class="toggle-switch-figure"></div>
+        <div class="toggle-switch-figureAlt"></div>
+      </div>
+    </label>
+  </div>
+
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="status-display">
+        <div class="status-text" id="statusText"></div>
+        <div class="typing-dots" id="typingDots">...</div>
+      </div>
+
+      <div class="mic-container">
+        <button class="mic-button" id="micButton">
+          <lottie-player
+            id="micAnimation"
+            src="../Lottie-files/Search Mic wave.json"
+            background="transparent"
+            speed="1"
+            loop
+            autoplay
+          >
+          </lottie-player>
+        </button>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-button" id="historyButton">
+        📜
+        <span>History</span>
+      </button>
+      <button class="nav-button" id="deleteButton">
+        🗑️
+        <span>Delete</span>
+      </button>
+      <button class="nav-button" id="voiceButton">
+        🗣️
+        <span>Voice</span>
+      </button>
+    </div>
+
+    <div class="modal" id="historyModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Conversation History</div>
+          <button class="close-button" id="closeHistoryModal">✕</button>
+        </div>
+        <div id="historyContent"></div>
+      </div>
+    </div>
+
+    <div class="modal" id="deleteModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Delete Conversations</div>
+          <button class="close-button" id="closeDeleteModal">✕</button>
+        </div>
+        <div class="history-controls">
+          <button class="control-button" id="selectAllButton">
+            Select All
+          </button>
+          <button class="control-button" id="deselectAllButton">
+            Deselect All
+          </button>
+          <button class="control-button danger" id="deleteSelectedButton">
+            Delete Selected
+          </button>
+          <button class="control-button danger" id="clearAllButton">
+            Clear All
+          </button>
+        </div>
+        <div id="deleteContent"></div>
+      </div>
+    </div>
+
+    <div class="modal" id="voiceModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">Select a Voice</div>
+          <button class="close-button" id="closeVoiceModal">✕</button>
+        </div>
+        <div id="voiceList" class="voice-list"></div>
+      </div>
+    </div>
+
+    <div class="name-modal" id="nameModal">
+      <div class="name-modal-content">
+        <h2>Welcome to Rhyniox AI!</h2>
+        <p style="color: #ccc; margin-bottom: 20px;">Please enter your name to get started:</p>
+        <input type="text" class="name-input" id="nameInput" placeholder="Your name" maxlength="50">
+        <button class="name-submit" id="nameSubmit">Let's Chat!</button>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script>
+      // REMOVED old responsive nav and hamburger logic
+
+      class JarvisAssistant {
+        constructor() {
+          this.isListening = false;
+          this.isSpeaking = false;
+          this.isContinuousMode = false;
+          this.recognition = null;
+          this.synthesis = window.speechSynthesis;
+          this.conversations = this.loadConversations();
+          this.selectedItems = new Set();
+          this.voices = [];
+          this.selectedVoiceName = this.loadVoicePreference();
+          this.userName = this.loadUserName();
+
+          this.initializeElements();
+          this.initializeSpeechRecognition();
+          this.initializeEventListeners();
+          this.initializeTheme(); // MODIFIED from initializeTimeBasedBackground
+
+          // Voices load asynchronously, so we need to listen for the event
+          this.synthesis.onvoiceschanged = () => this.populateVoiceList();
+
+          if (!this.userName) {
+            this.showNameModal();
+          } else {
+            this.setWelcomeMessage();
+          }
+        }
+
+        initializeElements() {
+          this.micButton = document.getElementById("micButton");
+          this.micAnimation = document.getElementById("micAnimation");
+          this.statusText = document.getElementById("statusText");
+          this.typingDots = document.getElementById("typingDots");
+          this.historyButton = document.getElementById("historyButton");
+          this.deleteButton = document.getElementById("deleteButton");
+          this.voiceButton = document.getElementById("voiceButton");
+          this.historyModal = document.getElementById("historyModal");
+          this.deleteModal = document.getElementById("deleteModal");
+          this.voiceModal = document.getElementById("voiceModal");
+          this.themeToggle = document.querySelector(".toggle-input"); // NEW
+          this.nameModal = document.getElementById("nameModal");
+          this.nameInput = document.getElementById("nameInput");
+          this.nameSubmit = document.getElementById("nameSubmit");
+          if (!this.userName) {
+            this.statusText.textContent = "Welcome! Please enter your name to get started.";
+          } else {
+            this.statusText.textContent = "Tap the mic to start continuous conversation!";
+          }
+        }
+
+        initializeSpeechRecognition() {
+          const SpeechRecognition =
+            window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!SpeechRecognition) {
+            this.statusText.textContent =
+              "Sorry, your browser doesn't support speech recognition.";
+            return;
+          }
+          this.recognition = new SpeechRecognition();
+          this.recognition.continuous = true;
+          this.recognition.interimResults = true;
+          this.recognition.lang = "en-US";
+          this.recognition.maxAlternatives = 1;
+
+          this.recognition.onstart = () => {
+            this.isListening = true;
+            this.micButton.classList.add("listening");
+            this.statusText.textContent = this.isContinuousMode
+              ? "I'm listening... (continuous mode)"
+              : "Listening...";
+            this.setMicAnimationState("listening");
+          };
+
+          this.recognition.onresult = (event) => {
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+              if (event.results[i].isFinal) {
+                const transcript = event.results[i][0].transcript.trim();
+                if (transcript.length > 2) this.handleUserInput(transcript);
+              }
+            }
+          };
+
+          this.recognition.onerror = (event) => {
+            console.error("Speech recognition error:", event.error);
+            if (event.error === "no-speech" && this.isContinuousMode) {
+              setTimeout(() => this.startListening(), 1000);
+              return;
+            }
+            if (event.error !== "aborted") {
+              this.statusText.textContent =
+                "Something went wrong. Let's try again.";
+            }
+            if (!this.isContinuousMode) this.stopContinuousMode();
+          };
+
+          this.recognition.onend = () => {
+            this.isListening = false;
+            this.micButton.classList.remove("listening");
+            if (this.isContinuousMode && !this.isSpeaking) {
+              setTimeout(() => {
+                if (this.isContinuousMode && !this.isSpeaking) {
+                  this.startListening();
+                }
+              }, 500);
+            } else {
+              this.setMicAnimationState("idle");
+            }
+          };
+        }
+
+        initializeEventListeners() {
+          this.micButton.addEventListener("click", () =>
+            this.toggleContinuousMode()
+          );
+          this.historyButton.addEventListener("click", () =>
+            this.showHistory()
+          );
+          this.deleteButton.addEventListener("click", () =>
+            this.showDeleteModal()
+          );
+          this.voiceButton.addEventListener("click", () =>
+            this.showVoiceModal()
+          );
+
+          document
+            .getElementById("closeHistoryModal")
+            .addEventListener("click", () => this.hideModal(this.historyModal));
+          document
+            .getElementById("closeDeleteModal")
+            .addEventListener("click", () => this.hideModal(this.deleteModal));
+          document
+            .getElementById("closeVoiceModal")
+            .addEventListener("click", () => this.hideModal(this.voiceModal));
+
+          document
+            .getElementById("selectAllButton")
+            .addEventListener("click", () => this.selectAll());
+          document
+            .getElementById("deselectAllButton")
+            .addEventListener("click", () => this.deselectAll());
+          document
+            .getElementById("deleteSelectedButton")
+            .addEventListener("click", () => this.deleteSelected());
+          document
+            .getElementById("clearAllButton")
+            .addEventListener("click", () => this.clearAll());
+
+          this.initializeNameModal();
+
+          window.addEventListener("click", (event) => {
+            if (event.target === this.historyModal)
+              this.hideModal(this.historyModal);
+            if (event.target === this.deleteModal)
+              this.hideModal(this.deleteModal);
+            if (event.target === this.voiceModal)
+              this.hideModal(this.voiceModal);
+          });
+        }
+
+        setMicAnimationState(state) {
+          if (!this.micAnimation) return;
+          const speed = { idle: 1, listening: 1.5, speaking: 2 };
+          this.micAnimation.setSpeed(speed[state] || 1);
+        }
+
+        // === Toggle Button Script ===
+        initializeTheme() {
+          // Initialize theme based on current time, but allow toggle override
+          const toggleInput = document.getElementById("themeToggle");
+
+          // Check current time to determine if it's day or night
+          const now = new Date();
+          const hour = now.getHours();
+          const isDayTime = hour >= 6 && hour < 18; // Day: 6 AM to 6 PM
+
+          // Set toggle based on time (not saved preference on page load)
+          toggleInput.checked = !isDayTime; // Night mode when not daytime
+          this.updateBackground();
+
+          toggleInput.addEventListener("change", () => {
+            const isNight = toggleInput.checked;
+            localStorage.setItem("toggleState", isNight);
+            this.updateBackground();
+          });
+        }
+
+        // MODIFIED: updateBackground is now driven by the toggle state
+        updateBackground() {
+          let mode = this.themeToggle.checked ? "night" : "day";
+
+          const nightSky = document.getElementById("nightSky");
+          const morningSky = document.getElementById("morningSky");
+          const sun = document.getElementById("sun");
+          const moon = document.getElementById("moon");
+          const birds = [
+            { id: "birdContainer1", duration: 26000, delay: 0 },
+            { id: "birdContainer2", duration: 22000, delay: 4000 },
+            { id: "birdContainer3", duration: 18000, delay: 8000 },
+            { id: "birdContainer4", duration: 24000, delay: 12000 },
+          ];
+
+          const isDay = mode === "day";
+          nightSky.style.display = isDay ? "none" : "block";
+          morningSky.style.display = isDay ? "block" : "none";
+
+          if (window.innerWidth > 480) {
+            document.body.style.background = isDay
+              ? "" // Let the .morning-sky div handle the background
+              : "linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 30%, #000000 100%)";
+          }
+
+          document.body.style.color = isDay ? "#333" : "white";
+          document.body.classList.toggle('day-mode', isDay);
+          document.body.classList.toggle('night-mode', !isDay);
+          if (sun) sun.style.display = isDay ? "block" : "none";
+          if (moon) moon.style.display = isDay ? "none" : "block";
+
+          if (!isDay && !nightSky.querySelector(".star")) {
+            this.createStars();
+          }
+
+          if (isDay) {
+            birds.forEach((b) => {
+              const bird = document.getElementById(b.id);
+              if (bird && !bird.dataset.animating) {
+                bird.dataset.animating = "true";
+                bird.style.opacity = "1";
+                setTimeout(() => {
+                  bird.animate(
+                    [
+                      { left: "-20vw", opacity: 1 },
+                      { left: "110vw", opacity: 0.7 },
+                    ],
+                    {
+                      duration: b.duration,
+                      iterations: Infinity,
+                      easing: "linear",
+                    }
+                  );
+                }, b.delay);
+              }
+            });
+          } else {
+            birds.forEach((b) => {
+              const bird = document.getElementById(b.id);
+              if (bird) {
+                bird.getAnimations().forEach((anim) => anim.cancel());
+                bird.style.opacity = "0";
+                bird.dataset.animating = "";
+              }
+            });
+          }
+        }
+
+        createStars() {
+          const nightSky = document.getElementById("nightSky");
+          if (nightSky.querySelector(".star")) return;
+          const starSizes = ["small", "medium", "large"];
+          for (let i = 0; i < 50; i++) {
+            const star = document.createElement("div");
+            star.className = `star ${starSizes[Math.floor(Math.random() * 3)]}`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 3}s`;
+            star.style.animationDuration = `${Math.random() * 2 + 2}s`;
+            nightSky.appendChild(star);
+          }
+        }
+
+        toggleContinuousMode() {
+          this.isSpeaking && this.stopSpeaking();
+          this.isContinuousMode = !this.isContinuousMode;
+          if (this.isContinuousMode) {
+            this.statusText.textContent = "Starting continuous conversation...";
+            this.micButton.classList.add("continuous-mode");
+            setTimeout(() => this.startListening(), 500);
+          } else {
+            this.stopContinuousMode();
+          }
+        }
+
+        startListening() {
+          if (this.recognition && !this.isListening && !this.isSpeaking) {
+            try {
+              this.recognition.start();
+            } catch (e) {
+              console.error("Error starting recognition:", e);
+            }
+          }
+        }
+
+        stopContinuousMode() {
+          this.isContinuousMode = false;
+          this.isListening = false;
+          this.micButton.classList.remove(
+            "listening",
+            "speaking",
+            "continuous-mode"
+          );
+          this.statusText.textContent = "Tap to start continuous chat again!";
+          this.setMicAnimationState("idle");
+          this.recognition?.stop();
+        }
+
+        async handleUserInput(userInput) {
+          // Check for change name command
+          const changeNameRegex = /^hello rhynoix ai change my name - (.+)$/i;
+          const match = userInput.match(changeNameRegex);
+          if (match) {
+            const newName = match[1].trim();
+            this.saveUserName(newName);
+            this.speak(`Got it! I'll call you ${newName} from now on.`);
+            return;
+          }
+
+          this.statusText.textContent = `You said: "${userInput}"`;
+          const cachedResponse = this.findSimilarConversation(userInput);
+          if (cachedResponse) {
+            const prefix = "Like I mentioned earlier, ";
+            this.speak(prefix + cachedResponse.ai);
+            return;
+          }
+
+          this.typingDots.style.display = "block";
+          this.statusText.textContent = "Thinking...";
+
+          try {
+            console.log("Making request to backend with:", userInput);
+            
+            const response = await fetch("http://localhost:5000/ask", {
+              method: "POST",
+              headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+              },
+              body: JSON.stringify({ text: userInput, userName: this.userName }),
+            });
+
+            console.log("Response status:", response.status);
+            console.log("Response headers:", response.headers);
+
+            if (!response.ok) {
+              const errorText = await response.text();
+              console.error("Server error response:", errorText);
+              throw new Error(`API error: ${response.status} - ${response.statusText}. Details: ${errorText}`);
+            }
+
+            const data = await response.json();
+            console.log("Received response:", data);
+
+            if (!data.reply) {
+              throw new Error("No reply received from server");
+            }
+
+            this.conversations.push({
+              id: Date.now(),
+              user: userInput,
+              ai: data.reply,
+            });
+            this.saveConversations();
+            this.speak(data.reply);
+          } catch (error) {
+            console.error("Detailed error information:", {
+              message: error.message,
+              stack: error.stack,
+              name: error.name
+            });
+            
+            // More specific error messages
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+              this.speak("I can't connect to my brain right now. Please check if the server is running.");
+            } else if (error.message.includes('500')) {
+              this.speak("I'm having a server problem. Let me check my systems.");
+            } else if (error.message.includes('CORS')) {
+              this.speak("There's a connection security issue. Let me try to fix that.");
+            } else {
+              this.speak("Sorry, I'm having trouble processing that right now. Can you try again?");
+            }
+          } finally {
+            this.typingDots.style.display = "none";
+          }
+        }
+
+        speak(text) {
+          if (!text) return;
+          this.stopSpeaking();
+
+          const utterance = new SpeechSynthesisUtterance(text);
+          const selectedVoice = this.voices.find(
+            (v) => v.name === this.selectedVoiceName
+          );
+          utterance.voice =
+            selectedVoice ||
+            this.voices.find(
+              (v) => v.name.includes("Google") && v.lang.startsWith("en")
+            );
+
+          utterance.onstart = () => {
+            this.isSpeaking = true;
+            this.micButton.classList.add("speaking");
+            this.statusText.textContent = "Speaking...";
+            this.setMicAnimationState("speaking");
+          };
+
+          utterance.onend = () => {
+            this.isSpeaking = false;
+            this.micButton.classList.remove("speaking");
+            this.setMicAnimationState("idle");
+            if (this.isContinuousMode) {
+              this.statusText.textContent =
+                "I'm listening for your response...";
+              setTimeout(() => {
+                if (this.isContinuousMode && !this.isSpeaking)
+                  this.startListening();
+              }, 800);
+            } else {
+              this.statusText.textContent = "Tap the mic to continue our conversation!";
+            }
+          };
+
+          this.synthesis.speak(utterance);
+        }
+
+        stopSpeaking() {
+          if (this.synthesis.speaking) this.synthesis.cancel();
+          this.isSpeaking = false;
+          this.micButton.classList.remove("speaking");
+        }
+
+        showModal(modal) {
+          modal.style.display = "flex";
+        }
+        hideModal(modal) {
+          modal.style.display = "none";
+        }
+
+        showHistory() {
+          const content = document.getElementById("historyContent");
+          content.innerHTML =
+            this.conversations.length === 0
+              ? `<div class="empty-history">No conversations yet.</div>`
+              : [...this.conversations]
+                  .reverse()
+                  .map(
+                    (conv) => `
+              <div class="history-item">
+                <div class="history-user">You: ${conv.user}</div>
+                <div class="history-ai">Jarvis: ${conv.ai}</div>
+              </div>`
+                  )
+                  .join("");
+          this.showModal(this.historyModal);
+        }
+
+        showDeleteModal() {
+          this.selectedItems.clear();
+          const content = document.getElementById("deleteContent");
+          content.innerHTML =
+            this.conversations.length === 0
+              ? `<div class="empty-history">No conversations to delete.</div>`
+              : [...this.conversations]
+                  .reverse()
+                  .map(
+                    (conv) => `
+              <div class="checkbox-item">
+                <input type="checkbox" id="conv-${conv.id}" data-id="${conv.id}">
+                <label for="conv-${conv.id}" class="history-item" style="margin-bottom: 0; flex: 1;">
+                  <div class="history-user">You: ${conv.user}</div>
+                  <div class="history-ai">Jarvis: ${conv.ai}</div>
+                </label>
+              </div>`
+                  )
+                  .join("");
+          content
+            .querySelectorAll('input[type="checkbox"]')
+            .forEach((checkbox) => {
+              checkbox.addEventListener("change", (e) => {
+                const id = parseInt(e.target.dataset.id);
+                e.target.checked
+                  ? this.selectedItems.add(id)
+                  : this.selectedItems.delete(id);
+              });
+            });
+          this.showModal(this.deleteModal);
+        }
+
+        showVoiceModal() {
+          this.populateVoiceList(); // Re-populate in case voices loaded after initial setup
+          this.showModal(this.voiceModal);
+        }
+
+        populateVoiceList() {
+          if (this.synthesis.getVoices().length === 0) return;
+          this.voices = this.synthesis
+            .getVoices()
+            .filter((v) => v.lang.startsWith("en"));
+          const voiceList = document.getElementById("voiceList");
+          voiceList.innerHTML = this.voices
+            .map(
+              (voice) => `
+            <div class="voice-item ${
+              voice.name === this.selectedVoiceName ? "selected" : ""
+            }" data-name="${voice.name}">
+              <div class="voice-name">${voice.name}</div>
+              <div class="voice-lang">${voice.lang}</div>
+            </div>`
+            )
+            .join("");
+
+          voiceList.querySelectorAll(".voice-item").forEach((item) => {
+            item.addEventListener("click", () => {
+              this.selectedVoiceName = item.dataset.name;
+              this.saveVoicePreference(this.selectedVoiceName);
+              // Update UI selection
+              voiceList
+                .querySelector(".selected")
+                ?.classList.remove("selected");
+              item.classList.add("selected");
+              // Speak a sample and close
+              this.speak("I'll use this voice from now on.");
+              setTimeout(() => this.hideModal(this.voiceModal), 1500);
+            });
+          });
+        }
+
+        selectAll() {
+          document
+            .querySelectorAll('#deleteContent input[type="checkbox"]')
+            .forEach((cb) => {
+              cb.checked = true;
+              this.selectedItems.add(parseInt(cb.dataset.id));
+            });
+        }
+
+        deselectAll() {
+          document
+            .querySelectorAll('#deleteContent input[type="checkbox"]')
+            .forEach((cb) => (cb.checked = false));
+          this.selectedItems.clear();
+        }
+
+        deleteSelected() {
+          if (
+            this.selectedItems.size > 0 &&
+            confirm(
+              `Delete ${this.selectedItems.size} selected conversation(s)?`
+            )
+          ) {
+            this.conversations = this.conversations.filter(
+              (conv) => !this.selectedItems.has(conv.id)
+            );
+            this.saveConversations();
+            this.showDeleteModal();
+          }
+        }
+
+        clearAll() {
+          if (
+            this.conversations.length > 0 &&
+            confirm("Delete all conversations? This cannot be undone.")
+          ) {
+            this.conversations = [];
+            this.saveConversations();
+            this.hideModal(this.deleteModal);
+          }
+        }
+
+        loadConversations() {
+          return JSON.parse(
+            localStorage.getItem("jarvis-conversations") || "[]"
+          );
+        }
+        saveConversations() {
+          localStorage.setItem(
+            "jarvis-conversations",
+            JSON.stringify(this.conversations)
+          );
+        }
+        loadVoicePreference() {
+          return localStorage.getItem("jarvis-voice") || "";
+        }
+        saveVoicePreference(voiceName) {
+          localStorage.setItem("jarvis-voice", voiceName);
+        }
+
+        findSimilarConversation(userInput) {
+          const normalizedInput = userInput.toLowerCase().trim();
+          const inputWords = normalizedInput
+            .split(/\s+/)
+            .filter((w) => w.length > 2);
+          for (const conv of this.conversations) {
+            const convWords = conv.user
+              .toLowerCase()
+              .split(/\s+/)
+              .filter((w) => w.length > 2);
+            const commonWords = inputWords.filter((word) =>
+              convWords.includes(word)
+            );
+            if (
+              commonWords.length > 0 &&
+              commonWords.length /
+                Math.max(inputWords.length, convWords.length) >
+                0.6
+            ) {
+              return conv;
+            }
+          }
+          return null;
+        }
+
+        loadUserName() {
+          return localStorage.getItem("jarvis-user-name") || "";
+        }
+
+        saveUserName(name) {
+          localStorage.setItem("jarvis-user-name", name);
+          this.userName = name;
+        }
+
+        showNameModal() {
+          this.nameModal.style.display = "flex";
+          this.nameInput.focus();
+        }
+
+        setWelcomeMessage() {
+          const welcomes = [
+            `Hello ${this.userName}! Ready to chat?`,
+            `Welcome back, ${this.userName}! How can I help you today?`,
+            `Hey ${this.userName}! Great to see you again!`,
+            `Hi ${this.userName}! Let's have an amazing conversation!`,
+            `Greetings ${this.userName}! I'm excited to talk with you!`
+          ];
+          const randomWelcome = welcomes[Math.floor(Math.random() * welcomes.length)];
+          this.statusText.textContent = randomWelcome;
+          // Automatically speak the welcome message to start the conversation
+          setTimeout(() => {
+            this.speak(randomWelcome);
+          }, 1000); // Small delay to ensure UI is ready
+        }
+
+        initializeNameModal() {
+          this.nameSubmit.addEventListener("click", () => {
+            const name = this.nameInput.value.trim();
+            if (name) {
+              this.saveUserName(name);
+              this.nameModal.style.display = "none";
+              this.setWelcomeMessage();
+            }
+          });
+
+          this.nameInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+              this.nameSubmit.click();
+            }
+          });
+        }
+      }
+
+      window.addEventListener("load", () => new JarvisAssistant());
+    </script>
+  </body>
+</html>
