@@ -6,6 +6,13 @@
 ![Node.js](https://img.shields.io/badge/node.js-18.x-green.svg)
 ![License](https://img.shields.io/badge/license-ISC-yellow.svg)
 
+## 🌐 Live Demo
+
+- **Frontend (Vercel)**: [https://rhyniox-ai.vercel.app/](https://rhyniox-ai.vercel.app/)
+- **Backend API (Render)**: [https://rhyniox-ai.onrender.com/](https://rhyniox-ai.onrender.com/)
+
+Experience Rhyniox AI directly in your browser! Click the link above to start conversation with your AI assistant.
+
 ## ✨ Features
 
 ### 🎙️ **Voice Interaction**
@@ -78,24 +85,53 @@
 
 5. **Open your browser**
 
-   Navigate to `http://localhost:5000` to experience Rhyniox AI!
+   Navigate to `http://localhost:5000` to experience Rhyniox AI locally, or visit the live demo at [https://rhyniox-ai.vercel.app/](https://rhyniox-ai.vercel.app/)
+
+## 🌐 Deployment
+
+This project is deployed using modern cloud platforms:
+
+- **Frontend**: Deployed on [Vercel](https://vercel.com/) for optimal performance and global CDN
+- **Backend**: Deployed on [Render](https://render.com/) with auto-scaling capabilities
+- **Assets**: Served directly from GitHub for reliable asset delivery
+
+### Deploy Your Own Instance
+
+**Frontend (Vercel):**
+
+1. Fork this repository
+2. Connect your GitHub account to Vercel
+3. Deploy the `frontend` folder
+4. Update the API endpoint in the HTML file
+
+**Backend (Render):**
+
+1. Connect your GitHub account to Render
+2. Create a new web service
+3. Set the root directory to `backend`
+4. Add your `OPENAI_API_KEY` environment variable
 
 ## 🛠️ Project Structure
 
 ```
 rhyniox-ai/
-├── 📁 .vscode/              # VS Code configuration
-├── 📁 node_modules/         # Dependencies
+├── 📁 backend/              # Node.js/Express server
+│   ├── � package.json      # Backend dependencies
+│   └── 📄 server.js         # Express server with Groq API
+├── � frontend/             # Frontend application
+│   ├── 📄 Rhynoix-AI.html   # Main application interface
+│   └── 📄 vercel.json       # Vercel deployment config
+├── � Lottie-files/         # Animation assets
+│   ├── 🎬 birds-flying.json
+│   ├── 🎬 Search Mic wave.json
+│   ├── 🎬 Tree in the wind.json
+│   ├── 🖼️ rhynoix_ai.png
+│   └── 🖼️ rhynoix.png
 ├── 📄 .env                  # Environment variables (API keys)
 ├── 📄 .gitignore           # Git ignore file
-├── 📄 day.html             # Day theme interface
-├── 📄 index.html           # Main night theme interface
-├── 📄 package.json         # Project configuration
-├── 📄 server.js            # Express.js backend server
-├── 📄 README.md            # This file
-├── 🎬 birds-flying.json    # Bird animation data
-├── 🎬 Search Mic wave.json # Microphone wave animation
-└── 🎬 Tree in the wind.json # Tree animation data
+├── 📄 package.json         # Root project configuration
+├── 📄 render.yaml          # Render deployment config
+└── 📄 README.md            # This file
 ```
 
 ## 🔧 Technical Architecture
@@ -132,10 +168,11 @@ rhyniox-ai/
 
 ### Starting a Conversation
 
-1. **Allow microphone access** when prompted
-2. **Click the microphone button** or say "Hey Jarvis"
-3. **Speak your question** or command
-4. **Listen to Rhyniox's response** and continue the conversation
+1. **Visit the live demo** at [https://rhyniox-ai.vercel.app/](https://rhyniox-ai.vercel.app/)
+2. **Allow microphone access** when prompted
+3. **Click the microphone button** or say "Hey Jarvis"
+4. **Speak your question** or command
+5. **Listen to Rhyniox's response** and continue the conversation
 
 ### Voice Commands Examples
 
@@ -149,8 +186,10 @@ rhyniox-ai/
 
 ### Interface Themes
 
-- **Night Mode** (`index.html`): Dark theme with stars and moon
-- **Day Mode** (`day.html`): Bright theme with sun and clouds
+- **Night Mode**: Dark theme with stars, moon, and mystical atmosphere
+- **Day Mode**: Bright theme with sun, clouds, and natural elements
+- **Animated Elements**: Flying birds, swaying trees, and celestial objects
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 
 ## ⚙️ Configuration
 
@@ -164,12 +203,12 @@ OPENAI_API_KEY=gsk_your_groq_api_key_here
 
 ### Server Configuration
 
-Modify `server.js` to change:
+Modify `backend/server.js` to change:
 
-- **Port number** (default: 5000)
+- **Port number** (default: 5000, but uses process.env.PORT in production)
 - **AI model** (default: "openai/gpt-oss-120b")
 - **System prompts** and personality
-- **CORS settings**
+- **CORS settings** for additional domains
 
 ### Voice Settings
 
@@ -201,9 +240,10 @@ const preferredVoice = voices.find(
 
 **🤖 AI not responding?**
 
-- Verify your Groq API key is correct
-- Check internet connection
-- Look at browser console for error messages
+- Verify your Groq API key is correct in the backend environment
+- Check if the backend service is running at [https://rhyniox-ai.onrender.com/health](https://rhyniox-ai.onrender.com/health)
+- Check browser console for CORS or network errors
+- Ensure backend and frontend are properly connected
 
 **🔊 No voice output?**
 
@@ -213,9 +253,11 @@ const preferredVoice = voices.find(
 
 **🖥️ Interface not loading?**
 
-- Clear browser cache
-- Disable browser extensions
+- Try visiting the live demo: [https://rhyniox-ai.vercel.app/](https://rhyniox-ai.vercel.app/)
+- Clear browser cache and reload
+- Disable browser extensions that might block content
 - Check JavaScript is enabled
+- Ensure you're using a modern browser (Chrome, Firefox, Safari, Edge)
 
 ## 🤝 Contributing
 
@@ -277,9 +319,11 @@ This project is licensed under the **ISC License** - see the [LICENSE](LICENSE) 
 
 ## 📞 Support & Contact
 
-- **Issues**: [GitHub Issues](https://github.com/your-username/rhyniox-ai/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/rhyniox-ai/discussions)
-- **Email**: support@rhynioxai.com
+- **Live Demo**: [https://rhyniox-ai.vercel.app/](https://rhyniox-ai.vercel.app/)
+- **Backend API**: [https://rhyniox-ai.onrender.com/](https://rhyniox-ai.onrender.com/)
+- **Issues**: [GitHub Issues](https://github.com/yagnarashagan6/Rhyniox-AI/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yagnarashagan6/Rhyniox-AI/discussions)
+- **Repository**: [https://github.com/yagnarashagan6/Rhyniox-AI](https://github.com/yagnarashagan6/Rhyniox-AI)
 
 ## 🌟 Show Your Support
 
@@ -299,6 +343,6 @@ If you found this project helpful, please:
 
 _Bringing the future of voice interaction to your browser_
 
-[🌐 Website](https://rhynioxai.com) • [📖 Documentation](https://docs.rhynioxai.com) • [💬 Community](https://community.rhynioxai.com)
+[🌐 Live Demo](https://rhyniox-ai.vercel.app/) • [� Backend API](https://rhyniox-ai.onrender.com/) • [� GitHub Repository](https://github.com/yagnarashagan6/Rhyniox-AI)
 
 </div>
