@@ -1340,6 +1340,7 @@
           if (!this.userName) {
             this.showNameModal();
           } else {
+            // Always welcome the user when they visit
             this.setWelcomeMessage();
           }
         }
@@ -1362,7 +1363,7 @@
           if (!this.userName) {
             this.statusText.textContent = "Welcome! Please enter your name to get started.";
           } else {
-            this.statusText.textContent = "Tap the mic to start continuous conversation!";
+            this.statusText.textContent = "Tap the mic to start voice conversation!";
           }
         }
 
@@ -1615,7 +1616,7 @@
             "speaking",
             "continuous-mode"
           );
-          this.statusText.textContent = "Tap to start continuous chat again!";
+          this.statusText.textContent = "Tap to start voice conversation again!";
           this.setMicAnimationState("idle");
           this.recognition?.stop();
         }
@@ -1732,7 +1733,7 @@
                   this.startListening();
               }, 800);
             } else {
-              this.statusText.textContent = "Tap the mic to continue our conversation!";
+              this.statusText.textContent = "Tap the mic to continue talking with me!";
             }
           };
 
@@ -1942,18 +1943,23 @@
 
         setWelcomeMessage() {
           const welcomes = [
-            `Hello ${this.userName}! Ready to chat?`,
-            `Welcome back, ${this.userName}! How can I help you today?`,
-            `Hey ${this.userName}! Great to see you again!`,
-            `Hi ${this.userName}! Let's have an amazing conversation!`,
-            `Greetings ${this.userName}! I'm excited to talk with you!`
+            `Hello ${this.userName}! Welcome to Rhyniox AI, your personal voice assistant. How can I help you today?`,
+            `Hey there ${this.userName}! I'm Rhyniox AI, ready to assist you with anything you need. What's on your mind?`,
+            `Welcome back ${this.userName}! Your intelligent voice companion is here and excited to chat with you!`,
+            `Hi ${this.userName}! Rhyniox AI at your service. I'm here to make your day better with great conversation!`,
+            `Greetings ${this.userName}! I'm thrilled you're here. Let's have an amazing voice conversation together!`,
+            `Good to see you ${this.userName}! I'm Rhyniox AI, your friendly voice assistant. What would you like to explore today?`,
+            `Hello ${this.userName}! Ready for some intelligent conversation? I'm here to help with anything you need!`,
+            `Hey ${this.userName}! Your personal AI companion is online and excited to talk. How are you doing today?`,
+            `Welcome ${this.userName}! I'm Rhyniox AI, and I can't wait to assist you with questions, conversations, or just having fun!`,
+            `Hi there ${this.userName}! Your voice assistant is ready to engage in meaningful conversation. What brings you here today?`
           ];
           const randomWelcome = welcomes[Math.floor(Math.random() * welcomes.length)];
           this.statusText.textContent = randomWelcome;
           // Automatically speak the welcome message to start the conversation
           setTimeout(() => {
             this.speak(randomWelcome);
-          }, 1000); // Small delay to ensure UI is ready
+          }, 1500); // Increased delay to ensure everything is loaded
         }
 
         initializeNameModal() {
