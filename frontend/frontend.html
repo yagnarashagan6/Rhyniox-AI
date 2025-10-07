@@ -602,6 +602,47 @@
         animation: pulse-live 2s infinite;
       }
 
+      .mic-button.recording-mode::before {
+        content: "REC";
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: bold;
+        animation: pulse-record 2s infinite;
+      }
+
+      .recording-timer {
+        position: absolute;
+        top: -35px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 14px;
+        font-weight: bold;
+        display: none;
+      }
+
+      @keyframes pulse-record {
+        0%,
+        100% {
+          opacity: 0.8;
+          transform: translateX(-50%) scale(1);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(-50%) scale(1.1);
+        }
+      }
+
       @keyframes pulse-live {
         0%,
         100% {
@@ -1321,6 +1362,7 @@
       </div>
 
       <div class="mic-container">
+        <div class="recording-timer" id="recordingTimer">0:00</div>
         <button class="mic-button" id="micButton">
           <lottie-player
             id="micAnimation"
@@ -1340,9 +1382,9 @@
         📜
         <span>History</span>
       </button>
-      <button class="nav-button" id="deleteButton">
-        🗑️
-        <span>Delete</span>
+      <button class="nav-button" id="modeButton">
+        🎙️
+        <span>Live Mode</span>
       </button>
       <button class="nav-button" id="voiceButton">
         🗣️
@@ -1356,31 +1398,24 @@
           <div class="modal-title">Conversation History</div>
           <button class="close-button" id="closeHistoryModal">✕</button>
         </div>
-        <div id="historyContent"></div>
-      </div>
-    </div>
-
-    <div class="modal" id="deleteModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <div class="modal-title">Delete Conversations</div>
-          <button class="close-button" id="closeDeleteModal">✕</button>
-        </div>
         <div class="history-controls">
-          <button class="control-button" id="selectAllButton">
+          <button class="control-button" id="toggleDeleteMode">
+            🗑️ Delete Mode
+          </button>
+          <button class="control-button" id="selectAllButton" style="display: none;">
             Select All
           </button>
-          <button class="control-button" id="deselectAllButton">
+          <button class="control-button" id="deselectAllButton" style="display: none;">
             Deselect All
           </button>
-          <button class="control-button danger" id="deleteSelectedButton">
+          <button class="control-button danger" id="deleteSelectedButton" style="display: none;">
             Delete Selected
           </button>
-          <button class="control-button danger" id="clearAllButton">
+          <button class="control-button danger" id="clearAllButton" style="display: none;">
             Clear All
           </button>
         </div>
-        <div id="deleteContent"></div>
+        <div id="historyContent"></div>
       </div>
     </div>
 
@@ -1411,7 +1446,11 @@
         constructor() {
           this.isListening = false;
           this.isSpeaking = false;
-          this.isContinuousMode = false;
+          this.isContinuousMode = true; // Start with Live Mode
+          this.isRecordMode = false;
+          this.isRecording = false;
+          this.recordingStartTime = null;
+          this.recordingTimer = null;
           this.recognition = null;
           this.synthesis = window.speechSynthesis;
           this.conversations = this.loadConversations();
@@ -1424,11 +1463,12 @@
           this.statusCheckInterval = null;
           this.hasUserInteracted = false;
           this.pendingWelcomeMessage = null;
+          this.isDeleteMode = false;
 
           this.initializeElements();
           this.initializeSpeechRecognition();
           this.initializeEventListeners();
-          this.initializeTheme(); // MODIFIED from initializeTimeBasedBackground
+          this.initializeTheme();
           this.initializeBackendStatusCheck();
           this.setupUserInteractionHandler();
 
@@ -1451,19 +1491,21 @@
           this.statusElement = document.getElementById("mainStatusText");
           this.typingDots = document.getElementById("typingDots");
           this.historyButton = document.getElementById("historyButton");
-          this.deleteButton = document.getElementById("deleteButton");
+          this.modeButton = document.getElementById("modeButton");
           this.voiceButton = document.getElementById("voiceButton");
           this.historyModal = document.getElementById("historyModal");
-          this.deleteModal = document.getElementById("deleteModal");
           this.voiceModal = document.getElementById("voiceModal");
-          this.themeToggle = document.querySelector(".toggle-input"); // NEW
+          this.themeToggle = document.querySelector(".toggle-input");
           this.nameModal = document.getElementById("nameModal");
           this.nameInput = document.getElementById("nameInput");
           this.nameSubmit = document.getElementById("nameSubmit");
+          this.recordingTimer = document.getElementById("recordingTimer");
+          
           if (!this.userName) {
             this.statusElement.textContent = "Welcome! Please enter your name to get started.";
           } else {
-            this.statusElement.textContent = "Tap the mic to start voice conversation!";
+            this.statusElement.textContent = "Live Mode - Tap the mic to start voice conversation!";
+            this.micButton.classList.add("continuous-mode");
           }
         }
 
@@ -1476,17 +1518,22 @@
             return;
           }
           this.recognition = new SpeechRecognition();
-          this.recognition.continuous = true;
-          this.recognition.interimResults = true;
+          this.recognition.continuous = this.isContinuousMode;
+          this.recognition.interimResults = false; // Don't send partial transcripts
           this.recognition.lang = "en-US";
           this.recognition.maxAlternatives = 1;
 
           this.recognition.onstart = () => {
             this.isListening = true;
             this.micButton.classList.add("listening");
-            this.statusElement.textContent = this.isContinuousMode
-              ? "I'm listening... (continuous mode)"
-              : "Listening...";
+            if (this.isRecordMode) {
+              this.statusElement.textContent = "Recording... Speak your message";
+              this.startRecordingTimer();
+            } else {
+              this.statusElement.textContent = this.isContinuousMode
+                ? "I'm listening... (Live mode - max 25 words)"
+                : "Listening...";
+            }
             this.setMicAnimationState("listening");
           };
 
@@ -1494,14 +1541,22 @@
             for (let i = event.resultIndex; i < event.results.length; i++) {
               if (event.results[i].isFinal) {
                 const transcript = event.results[i][0].transcript.trim();
-                if (transcript.length > 2) this.handleUserInput(transcript);
+                if (transcript.length > 2) {
+                  if (this.isRecordMode) {
+                    this.stopRecording();
+                  }
+                  this.handleUserInput(transcript);
+                }
               }
             }
           };
 
           this.recognition.onerror = (event) => {
             console.error("Speech recognition error:", event.error);
-            if (event.error === "no-speech" && this.isContinuousMode) {
+            if (this.isRecordMode) {
+              this.stopRecording();
+            }
+            if (event.error === "no-speech" && this.isContinuousMode && !this.isRecordMode) {
               setTimeout(() => this.startListening(), 1000);
               return;
             }
@@ -1509,15 +1564,17 @@
               this.statusElement.textContent =
                 "Something went wrong. Let's try again.";
             }
-            if (!this.isContinuousMode) this.stopContinuousMode();
+            if (!this.isContinuousMode && !this.isRecordMode) this.stopContinuousMode();
           };
 
           this.recognition.onend = () => {
             this.isListening = false;
             this.micButton.classList.remove("listening");
-            if (this.isContinuousMode && !this.isSpeaking) {
+            if (this.isRecordMode) {
+              this.stopRecording();
+            } else if (this.isContinuousMode && !this.isSpeaking) {
               setTimeout(() => {
-                if (this.isContinuousMode && !this.isSpeaking) {
+                if (this.isContinuousMode && !this.isSpeaking && !this.isRecordMode) {
                   this.startListening();
                 }
               }, 500);
@@ -1528,14 +1585,51 @@
         }
 
         initializeEventListeners() {
-          this.micButton.addEventListener("click", () =>
-            this.toggleContinuousMode()
-          );
+          // Mic button - different behavior for Live vs Record mode
+          this.micButton.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            if (this.isContinuousMode) {
+              this.toggleContinuousMode();
+            } else {
+              this.startRecording();
+            }
+          });
+
+          this.micButton.addEventListener("mouseup", (e) => {
+            e.preventDefault();
+            if (this.isRecordMode && this.isRecording) {
+              this.stopRecording();
+            }
+          });
+
+          this.micButton.addEventListener("mouseleave", (e) => {
+            if (this.isRecordMode && this.isRecording) {
+              this.stopRecording();
+            }
+          });
+
+          // Touch events for mobile
+          this.micButton.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            if (this.isContinuousMode) {
+              this.toggleContinuousMode();
+            } else {
+              this.startRecording();
+            }
+          });
+
+          this.micButton.addEventListener("touchend", (e) => {
+            e.preventDefault();
+            if (this.isRecordMode && this.isRecording) {
+              this.stopRecording();
+            }
+          });
+
           this.historyButton.addEventListener("click", () =>
             this.showHistory()
           );
-          this.deleteButton.addEventListener("click", () =>
-            this.showDeleteModal()
+          this.modeButton.addEventListener("click", () =>
+            this.toggleMode()
           );
           this.voiceButton.addEventListener("click", () =>
             this.showVoiceModal()
@@ -1545,12 +1639,13 @@
             .getElementById("closeHistoryModal")
             .addEventListener("click", () => this.hideModal(this.historyModal));
           document
-            .getElementById("closeDeleteModal")
-            .addEventListener("click", () => this.hideModal(this.deleteModal));
-          document
             .getElementById("closeVoiceModal")
             .addEventListener("click", () => this.hideModal(this.voiceModal));
 
+          // History modal delete functionality
+          document
+            .getElementById("toggleDeleteMode")
+            .addEventListener("click", () => this.toggleDeleteMode());
           document
             .getElementById("selectAllButton")
             .addEventListener("click", () => this.selectAll());
@@ -1569,8 +1664,6 @@
           window.addEventListener("click", (event) => {
             if (event.target === this.historyModal)
               this.hideModal(this.historyModal);
-            if (event.target === this.deleteModal)
-              this.hideModal(this.deleteModal);
             if (event.target === this.voiceModal)
               this.hideModal(this.voiceModal);
           });
@@ -1815,16 +1908,105 @@
           this.statusTextIndicator.textContent = text;
         }
 
+        toggleMode() {
+          this.isContinuousMode = !this.isContinuousMode;
+          this.isRecordMode = !this.isRecordMode;
+          
+          // Stop any current listening/recording
+          if (this.isListening) {
+            this.recognition?.stop();
+          }
+          if (this.isRecording) {
+            this.stopRecording();
+          }
+          
+          // Update UI
+          const modeButton = this.modeButton;
+          const span = modeButton.querySelector('span');
+          
+          if (this.isContinuousMode) {
+            modeButton.innerHTML = '🎙️<span>Live Mode</span>';
+            this.statusElement.textContent = "Live Mode - Tap mic to start (max 25 words)";
+            this.micButton.classList.remove("recording-mode");
+            this.micButton.classList.add("continuous-mode");
+          } else {
+            modeButton.innerHTML = '🔴<span>Record Mode</span>';
+            this.statusElement.textContent = "Record Mode - Hold mic to record (max 50 words)";
+            this.micButton.classList.remove("continuous-mode");
+            this.micButton.classList.add("recording-mode");
+          }
+          
+          // Update speech recognition settings
+          if (this.recognition) {
+            this.recognition.continuous = this.isContinuousMode;
+          }
+        }
+
+        startRecording() {
+          if (this.isRecording || this.isSpeaking) return;
+          
+          this.isRecording = true;
+          this.recordingStartTime = Date.now();
+          this.recordingTimer.style.display = "block";
+          this.startRecordingTimer();
+          
+          // Start speech recognition
+          this.startListening();
+        }
+
+        stopRecording() {
+          if (!this.isRecording) return;
+          
+          this.isRecording = false;
+          this.recordingTimer.style.display = "none";
+          
+          if (this.recordingTimer) {
+            clearInterval(this.recordingTimer);
+          }
+          
+          // Stop speech recognition
+          if (this.isListening) {
+            this.recognition?.stop();
+          }
+          
+          this.micButton.classList.remove("listening");
+          this.setMicAnimationState("idle");
+        }
+
+        startRecordingTimer() {
+          const timerElement = document.getElementById("recordingTimer");
+          
+          this.recordingTimer = setInterval(() => {
+            if (!this.isRecording) {
+              clearInterval(this.recordingTimer);
+              return;
+            }
+            
+            const elapsed = Math.floor((Date.now() - this.recordingStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Stop recording after 30 seconds (time limit)
+            if (elapsed >= 30) {
+              this.stopRecording();
+              this.statusElement.textContent = "Recording stopped - 30 second limit reached";
+            }
+          }, 1000);
+        }
+
         toggleContinuousMode() {
           this.isSpeaking && this.stopSpeaking();
-          this.isContinuousMode = !this.isContinuousMode;
-          if (this.isContinuousMode) {
-            this.statusElement.textContent = "Starting continuous conversation...";
-            this.micButton.classList.add("continuous-mode");
-            setTimeout(() => this.startListening(), 500);
-          } else {
+          
+          // If already in continuous mode, stop it
+          if (this.isListening) {
             this.stopContinuousMode();
+            return;
           }
+          
+          // Start continuous mode
+          this.statusElement.textContent = "Starting Live Mode conversation...";
+          setTimeout(() => this.startListening(), 500);
         }
 
         startListening() {
@@ -1838,14 +2020,16 @@
         }
 
         stopContinuousMode() {
-          this.isContinuousMode = false;
           this.isListening = false;
           this.micButton.classList.remove(
             "listening",
-            "speaking",
-            "continuous-mode"
+            "speaking"
           );
-          this.statusElement.textContent = "Tap to start voice conversation again!";
+          if (this.isContinuousMode) {
+            this.statusElement.textContent = "Live Mode - Tap mic to start conversation!";
+          } else {
+            this.statusElement.textContent = "Record Mode - Hold mic to record!";
+          }
           this.setMicAnimationState("idle");
           this.recognition?.stop();
         }
@@ -1858,6 +2042,19 @@
             const newName = match[1].trim();
             this.saveUserName(newName);
             this.speak(`Got it! I'll call you ${newName} from now on.`);
+            return;
+          }
+
+          // Word count validation
+          const wordCount = userInput.split(/\s+/).filter(Boolean).length;
+          const maxWords = this.isContinuousMode ? 25 : 50;
+          
+          if (wordCount > maxWords) {
+            const errorMsg = this.isContinuousMode 
+              ? "That's a bit long! Try using record mode for longer questions."
+              : "That's too long for record mode! Please keep it under 50 words.";
+            this.statusElement.textContent = errorMsg;
+            // Don't speak error messages, just show them
             return;
           }
 
@@ -1875,22 +2072,39 @@
           try {
             console.log("Making request to backend with:", userInput);
             
+            const requestBody = { 
+              text: userInput, 
+              userName: this.userName,
+              mode: this.isContinuousMode ? "live" : "record"
+            };
+            
             const response = await fetch(`${this.backendUrl}/ask`, {
               method: "POST",
               headers: { 
                 "Content-Type": "application/json",
                 "Accept": "application/json"
               },
-              body: JSON.stringify({ text: userInput, userName: this.userName }),
+              body: JSON.stringify(requestBody),
             });
 
             console.log("Response status:", response.status);
-            console.log("Response headers:", response.headers);
 
             if (!response.ok) {
-              const errorText = await response.text();
-              console.error("Server error response:", errorText);
-              throw new Error(`API error: ${response.status} - ${response.statusText}. Details: ${errorText}`);
+              const errorData = await response.json().catch(() => ({}));
+              
+              // Handle backend validation errors (don't speak them)
+              if (response.status === 400 && errorData.reply) {
+                this.statusElement.textContent = errorData.reply;
+                return;
+              }
+              
+              // Handle rate limiting
+              if (response.status === 429 && errorData.reply) {
+                this.statusElement.textContent = errorData.reply;
+                return;
+              }
+              
+              throw new Error(`API error: ${response.status} - ${response.statusText}`);
             }
 
             const data = await response.json();
@@ -1965,15 +2179,17 @@
             this.isSpeaking = false;
             this.micButton.classList.remove("speaking");
             this.setMicAnimationState("idle");
-            if (this.isContinuousMode) {
+            if (this.isContinuousMode && !this.isRecordMode) {
               this.statusElement.textContent =
                 "I'm listening for your response...";
               setTimeout(() => {
-                if (this.isContinuousMode && !this.isSpeaking)
+                if (this.isContinuousMode && !this.isSpeaking && !this.isRecordMode)
                   this.startListening();
               }, 800);
+            } else if (this.isContinuousMode) {
+              this.statusElement.textContent = "Live Mode - Tap mic to continue talking!";
             } else {
-              this.statusElement.textContent = "Tap the mic to continue talking with me!";
+              this.statusElement.textContent = "Record Mode - Hold mic to record!";
             }
           };
 
@@ -1993,27 +2209,32 @@
           modal.style.display = "none";
         }
 
-        showHistory() {
-          const content = document.getElementById("historyContent");
-          content.innerHTML =
-            this.conversations.length === 0
-              ? `<div class="empty-history">No conversations yet.</div>`
-              : [...this.conversations]
-                  .reverse()
-                  .map(
-                    (conv) => `
-              <div class="history-item">
-                <div class="history-user">You: ${conv.user}</div>
-                <div class="history-ai">Jarvis: ${conv.ai}</div>
-              </div>`
-                  )
-                  .join("");
-          this.showModal(this.historyModal);
+        toggleDeleteMode() {
+          this.isDeleteMode = !this.isDeleteMode;
+          const toggleButton = document.getElementById("toggleDeleteMode");
+          const deleteButtons = [
+            document.getElementById("selectAllButton"),
+            document.getElementById("deselectAllButton"),
+            document.getElementById("deleteSelectedButton"),
+            document.getElementById("clearAllButton")
+          ];
+          
+          if (this.isDeleteMode) {
+            toggleButton.textContent = "📜 View Mode";
+            toggleButton.classList.add("danger");
+            deleteButtons.forEach(btn => btn.style.display = "inline-block");
+            this.showDeleteHistory();
+          } else {
+            toggleButton.textContent = "🗑️ Delete Mode";
+            toggleButton.classList.remove("danger");
+            deleteButtons.forEach(btn => btn.style.display = "none");
+            this.showHistory();
+          }
         }
 
-        showDeleteModal() {
+        showDeleteHistory() {
           this.selectedItems.clear();
-          const content = document.getElementById("deleteContent");
+          const content = document.getElementById("historyContent");
           content.innerHTML =
             this.conversations.length === 0
               ? `<div class="empty-history">No conversations to delete.</div>`
@@ -2040,7 +2261,29 @@
                   : this.selectedItems.delete(id);
               });
             });
-          this.showModal(this.deleteModal);
+        }
+
+        showHistory() {
+          const content = document.getElementById("historyContent");
+          content.innerHTML =
+            this.conversations.length === 0
+              ? `<div class="empty-history">No conversations yet.</div>`
+              : [...this.conversations]
+                  .reverse()
+                  .map(
+                    (conv) => `
+              <div class="history-item">
+                <div class="history-user">You: ${conv.user}</div>
+                <div class="history-ai">Jarvis: ${conv.ai}</div>
+              </div>`
+                  )
+                  .join("");
+          this.showModal(this.historyModal);
+        }
+
+        showDeleteModal() {
+          // This method is no longer needed but keeping for compatibility
+          this.showHistory();
         }
 
         showVoiceModal() {
@@ -2084,7 +2327,7 @@
 
         selectAll() {
           document
-            .querySelectorAll('#deleteContent input[type="checkbox"]')
+            .querySelectorAll('#historyContent input[type="checkbox"]')
             .forEach((cb) => {
               cb.checked = true;
               this.selectedItems.add(parseInt(cb.dataset.id));
@@ -2093,7 +2336,7 @@
 
         deselectAll() {
           document
-            .querySelectorAll('#deleteContent input[type="checkbox"]')
+            .querySelectorAll('#historyContent input[type="checkbox"]')
             .forEach((cb) => (cb.checked = false));
           this.selectedItems.clear();
         }
@@ -2109,7 +2352,7 @@
               (conv) => !this.selectedItems.has(conv.id)
             );
             this.saveConversations();
-            this.showDeleteModal();
+            this.showDeleteHistory();
           }
         }
 
@@ -2120,7 +2363,8 @@
           ) {
             this.conversations = [];
             this.saveConversations();
-            this.hideModal(this.deleteModal);
+            this.isDeleteMode = false;
+            this.toggleDeleteMode(); // Reset to view mode
           }
         }
 
