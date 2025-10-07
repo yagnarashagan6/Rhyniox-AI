@@ -7,8 +7,14 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>Rhyniox AI</title>
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/yagnarashagan6/Rhyniox-AI/main/Lottie-files/rhynoix.png">
-    <link rel="icon" href="https://raw.githubusercontent.com/yagnarashagan6/Rhyniox-AI/main/Lottie-files/rhynoix.png">
+    <link
+      rel="apple-touch-icon"
+      href="https://raw.githubusercontent.com/yagnarashagan6/Rhyniox-AI/main/Lottie-files/rhynoix.png"
+    />
+    <link
+      rel="icon"
+      href="https://raw.githubusercontent.com/yagnarashagan6/Rhyniox-AI/main/Lottie-files/rhynoix.png"
+    />
     <style>
       body {
         box-sizing: border-box;
@@ -37,7 +43,7 @@
         z-index: 1;
       }
 
-      /* NEW: Keyframes for animated day sky */
+      /* Keyframes for animated day sky */
       @keyframes day-cycle {
         0% {
           background-position: 0% 0%;
@@ -50,7 +56,7 @@
         }
       }
 
-      /* MODIFIED: Morning sky styles with animated gradient */
+      /* Morning sky styles with animated gradient */
       .morning-sky {
         position: absolute;
         top: 0;
@@ -367,9 +373,9 @@
         height: 60px;
         background: rgba(0, 0, 0, 0.3);
         backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         z-index: 100;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
@@ -437,7 +443,8 @@
       }
 
       @keyframes pulse {
-        0%, 100% {
+        0%,
+        100% {
           opacity: 1;
           transform: scale(1);
         }
@@ -489,7 +496,7 @@
       }
 
       .status-text {
-        font-family: 'Arial', sans-serif;
+        font-family: "Arial", sans-serif;
         font-size: 24px;
         font-weight: bold;
         color: #ffffff;
@@ -500,10 +507,11 @@
         white-space: normal;
         overflow: hidden;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
         -webkit-box-orient: vertical;
         word-spacing: 3px;
+        transition: color 0.3s ease;
       }
 
       .day-mode .status-text {
@@ -514,6 +522,16 @@
       .night-mode .status-text {
         color: #f0f0f0;
         text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+      }
+
+      .status-text.error-text {
+        color: #ef4444; /* Red for errors */
+        text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+      }
+
+      .status-text.warning-text {
+        color: #f59e0b; /* Orange for warnings */
+        text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
       }
 
       .typing-dots {
@@ -582,12 +600,12 @@
         animation: speaking-pulse 0.5s infinite;
       }
 
-      .mic-button.continuous-mode {
+      .mic-button.live-mode-active {
         border-radius: 50%;
         border: 3px solid rgba(16, 185, 129, 0.5);
       }
 
-      .mic-button.continuous-mode::before {
+      .mic-button.live-mode-active::before {
         content: "LIVE";
         position: absolute;
         top: -10px;
@@ -676,6 +694,11 @@
         box-shadow: 0 4px 20px rgba(96, 165, 250, 0.2);
       }
 
+      .nav-button.active {
+        color: #10b981; /* Green to indicate active state */
+        background: rgba(16, 185, 129, 0.1);
+      }
+
       .nav-button span {
         font-size: 12px;
         font-weight: 500;
@@ -746,9 +769,9 @@
 
       /* Content inside modals that should scroll */
       #historyContent,
-      #deleteContent,
       #voiceList {
         overflow-y: auto;
+        flex-grow: 1;
       }
 
       /* Voice Modal Styles */
@@ -805,6 +828,15 @@
         font-size: 14px;
       }
 
+      .history-note {
+        font-size: 12px;
+        color: #93c5fd;
+        text-align: center;
+        margin-top: 15px;
+        font-style: italic;
+        flex-shrink: 0;
+      }
+
       .history-controls {
         display: flex;
         gap: 10px;
@@ -835,18 +867,6 @@
         background: linear-gradient(135deg, #ff4757, #ff3742);
       }
 
-      .checkbox-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        margin-bottom: 10px;
-      }
-
-      .checkbox-item input[type="checkbox"] {
-        margin-top: 5px;
-        accent-color: #40e0ff;
-      }
-
       .empty-history {
         text-align: center;
         color: #666;
@@ -860,7 +880,7 @@
           width: 250px;
           height: 250px;
         }
-        .mic-button.continuous-mode::before {
+        .mic-button.live-mode-active::before {
           top: 5px;
         }
         body {
@@ -896,7 +916,7 @@
         }
         .nav-button {
           font-size: 18px;
-          width: 70px;
+          width: 65px;
           padding: 8px;
         }
         .nav-button span {
@@ -1128,9 +1148,7 @@
         background-color: #efeeda;
         border-radius: 50%;
         border: 1px solid #dee1c5;
-        box-shadow:
-          6px -1px 0 -0.5px #fcfcfc,
-          10px -2px 0 -0.5px #fcfcfc,
+        box-shadow: 6px -1px 0 -0.5px #fcfcfc, 10px -2px 0 -0.5px #fcfcfc,
           8px 1px 0 -1px #fcfcfc;
         transform: scale(0);
         transform-origin: center;
@@ -1166,151 +1184,71 @@
         <div class="cloud cloud2"></div>
         <div class="cloud cloud3"></div>
       </div>
-
       <div class="morning-sky" id="morningSky" style="display: none">
         <div class="sun" id="sun"></div>
         <div class="morning-cloud morning-cloud1"></div>
         <div class="morning-cloud morning-cloud2"></div>
         <div class="morning-cloud morning-cloud3"></div>
-        <div
-          id="treeContainer"
-          style="
-            position: fixed;
-            left: -200px;
-            bottom: 250px;
-            width: 340px;
-            height: 500px;
-            z-index: 5;
-            pointer-events: none;
-          "
-        >
-          <lottie-player
-            id="treeLottie"
-            src="https://raw.githubusercontent.com/yagnarashagan6/Rhyniox-AI/main/Lottie-files/Tree%20in%20the%20wind.json"
-            background="transparent"
-            speed="1"
-            style="width: 760px; height: 950px; top: 60px"
-            loop
-            autoplay
-          ></lottie-player>
-        </div>
-        <div
-          id="birdContainer1"
-          style="
-            position: absolute;
-            top: 20%;
-            left: -200px;
-            width: 180px;
-            height: 120px;
-            z-index: 3;
-            pointer-events: none;
-            transform: scaleX(-1);
-          "
-        >
-          <lottie-player
-            id="birdLottie1"
-            src="https://raw.githubusercontent.com/yagnarashagan6/Rhyniox-AI/main/Lottie-files/birds-flying.json"
-            background="transparent"
-            speed="0.5"
-            style="width: 180px; height: 120px"
-            loop
-            autoplay
-          ></lottie-player>
-        </div>
-        <div
-          id="birdContainer2"
-          style="
-            position: absolute;
-            top: 10%;
-            left: -200px;
-            width: 140px;
-            height: 90px;
-            z-index: 3;
-            pointer-events: none;
-            transform: scaleX(-1);
-          "
-        >
-          <lottie-player
-            id="birdLottie2"
-            src="https://raw.githubusercontent.com/yagnarashagan6/Rhyniox-AI/main/Lottie-files/birds-flying.json"
-            background="transparent"
-            speed="0.6"
-            style="width: 140px; height: 90px"
-            loop
-            autoplay
-          ></lottie-player>
-        </div>
-        <div
-          id="birdContainer3"
-          style="
-            position: absolute;
-            top: 15%;
-            left: -200px;
-            width: 100px;
-            height: 65px;
-            z-index: 3;
-            pointer-events: none;
-            transform: scaleX(-1);
-          "
-        >
-          <lottie-player
-            id="birdLottie3"
-            src="https://raw.githubusercontent.com/yagnarashagan6/Rhyniox-AI/main/Lottie-files/birds-flying.json"
-            background="transparent"
-            speed="0.7"
-            style="width: 100px; height: 65px"
-            loop
-            autoplay
-          ></lottie-player>
-        </div>
-        <div
-          id="birdContainer4"
-          style="
-            position: absolute;
-            top: 20%;
-            left: -200px;
-            width: 120px;
-            height: 80px;
-            z-index: 3;
-            pointer-events: none;
-            transform: scaleX(-1);
-          "
-        >
-          <lottie-player
-            id="birdLottie4"
-            src="https://raw.githubusercontent.com/yagnarashagan6/Rhyniox-AI/main/Lottie-files/birds-flying.json"
-            background="transparent"
-            speed="0.55"
-            style="width: 120px; height: 80px"
-            loop
-            autoplay
-          ></lottie-player>
-        </div>
       </div>
     </div>
 
     <div class="nav-bar">
-      <!-- Status Indicator -->
       <div class="status-indicator checking" id="statusIndicator">
         <div class="status-dot"></div>
         <span id="statusText">Checking...</span>
       </div>
 
-  <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center;">
-    <img src="https://raw.githubusercontent.com/yagnarashagan6/Rhyniox-AI/main/Lottie-files/rhynoix.png" alt="Rhyniox AI" style="height: 80px; width: 80px; vertical-align: middle; display: inline-block; margin-top:15px" />
-    <div class="nav-title" style="font-size: 33px; margin-left: -10px; display: inline-block; vertical-align: middle; text-align: left;">Rhyniox AI</div>
-  </div>
-  <div class="theme-wrapper" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
-    <label class="toggle">
-      <input class="toggle-input" type="checkbox" id="themeToggle" />
-      <div class="toggle-bg"></div>
-      <div class="toggle-switch">
-        <div class="toggle-switch-figure"></div>
-        <div class="toggle-switch-figureAlt"></div>
+      <div
+        style="
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          display: flex;
+          align-items: center;
+        "
+      >
+        <img
+          src="https://raw.githubusercontent.com/yagnarashagan6/Rhyniox-AI/main/Lottie-files/rhynoix.png"
+          alt="Rhyniox AI"
+          style="
+            height: 80px;
+            width: 80px;
+            vertical-align: middle;
+            display: inline-block;
+            margin-top: 15px;
+          "
+        />
+        <div
+          class="nav-title"
+          style="
+            font-size: 33px;
+            margin-left: -10px;
+            display: inline-block;
+            vertical-align: middle;
+            text-align: left;
+          "
+        >
+          Rhyniox AI
+        </div>
       </div>
-    </label>
-  </div>
-
+      <div
+        class="theme-wrapper"
+        style="
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+        "
+      >
+        <label class="toggle">
+          <input class="toggle-input" type="checkbox" id="themeToggle" />
+          <div class="toggle-bg"></div>
+          <div class="toggle-switch">
+            <div class="toggle-switch-figure"></div>
+            <div class="toggle-switch-figureAlt"></div>
+          </div>
+        </label>
       </div>
     </div>
 
@@ -1319,7 +1257,6 @@
         <div class="status-text" id="mainStatusText"></div>
         <div class="typing-dots" id="typingDots">...</div>
       </div>
-
       <div class="mic-container">
         <button class="mic-button" id="micButton">
           <lottie-player
@@ -1329,8 +1266,7 @@
             speed="1"
             loop
             autoplay
-          >
-          </lottie-player>
+          ></lottie-player>
         </button>
       </div>
     </div>
@@ -1340,9 +1276,9 @@
         📜
         <span>History</span>
       </button>
-      <button class="nav-button" id="deleteButton">
-        🗑️
-        <span>Delete</span>
+      <button class="nav-button" id="modeButton" title="Toggle Mode">
+        🔴
+        <span>Live</span>
       </button>
       <button class="nav-button" id="voiceButton">
         🗣️
@@ -1357,30 +1293,17 @@
           <button class="close-button" id="closeHistoryModal">✕</button>
         </div>
         <div id="historyContent"></div>
-      </div>
-    </div>
-
-    <div class="modal" id="deleteModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <div class="modal-title">Delete Conversations</div>
-          <button class="close-button" id="closeDeleteModal">✕</button>
-        </div>
-        <div class="history-controls">
-          <button class="control-button" id="selectAllButton">
-            Select All
-          </button>
-          <button class="control-button" id="deselectAllButton">
-            Deselect All
-          </button>
-          <button class="control-button danger" id="deleteSelectedButton">
-            Delete Selected
-          </button>
-          <button class="control-button danger" id="clearAllButton">
-            Clear All
+        <div
+          class="history-controls"
+          style="justify-content: flex-end; margin-top: 15px"
+        >
+          <button class="control-button danger" id="clearAllHistoryButton">
+            Clear All History
           </button>
         </div>
-        <div id="deleteContent"></div>
+        <div class="history-note">
+          Note: History is automatically cleared after 7 days.
+        </div>
       </div>
     </div>
 
@@ -1397,29 +1320,34 @@
     <div class="name-modal" id="nameModal">
       <div class="name-modal-content">
         <h2>Welcome to Rhyniox AI!</h2>
-        <p style="color: #ccc; margin-bottom: 20px;">Please enter your name to get started:</p>
-        <input type="text" class="name-input" id="nameInput" placeholder="Your name" maxlength="50">
+        <p style="color: #ccc; margin-bottom: 20px">
+          Please enter your name to get started:
+        </p>
+        <input
+          type="text"
+          class="name-input"
+          id="nameInput"
+          placeholder="Your name"
+          maxlength="50"
+        />
         <button class="name-submit" id="nameSubmit">Let's Chat!</button>
       </div>
     </div>
 
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <script>
-      // REMOVED old responsive nav and hamburger logic
-
       class JarvisAssistant {
         constructor() {
           this.isListening = false;
           this.isSpeaking = false;
-          this.isContinuousMode = false;
+          this.isLiveModeActive = false; // Is continuous listening active
+          this.mode = "live"; // 'live' or 'record'
           this.recognition = null;
           this.synthesis = window.speechSynthesis;
-          this.conversations = this.loadConversations();
-          this.selectedItems = new Set();
-          this.voices = [];
           this.selectedVoiceName = this.loadVoicePreference();
+          this.voices = [];
           this.userName = this.loadUserName();
-          this.backendUrl = 'https://rhyniox-ai.onrender.com';
+          this.backendUrl = "https://rhyniox-ai.onrender.com";
           this.isBackendOnline = false;
           this.statusCheckInterval = null;
           this.hasUserInteracted = false;
@@ -1428,17 +1356,15 @@
           this.initializeElements();
           this.initializeSpeechRecognition();
           this.initializeEventListeners();
-          this.initializeTheme(); // MODIFIED from initializeTimeBasedBackground
+          this.initializeTheme();
           this.initializeBackendStatusCheck();
           this.setupUserInteractionHandler();
 
-          // Voices load asynchronously, so we need to listen for the event
           this.synthesis.onvoiceschanged = () => this.populateVoiceList();
 
           if (!this.userName) {
             this.showNameModal();
           } else {
-            // Always welcome the user when they visit
             this.setWelcomeMessage();
           }
         }
@@ -1451,92 +1377,97 @@
           this.statusElement = document.getElementById("mainStatusText");
           this.typingDots = document.getElementById("typingDots");
           this.historyButton = document.getElementById("historyButton");
-          this.deleteButton = document.getElementById("deleteButton");
+          this.modeButton = document.getElementById("modeButton");
           this.voiceButton = document.getElementById("voiceButton");
           this.historyModal = document.getElementById("historyModal");
-          this.deleteModal = document.getElementById("deleteModal");
           this.voiceModal = document.getElementById("voiceModal");
-          this.themeToggle = document.querySelector(".toggle-input"); // NEW
+          this.themeToggle = document.getElementById("themeToggle");
           this.nameModal = document.getElementById("nameModal");
           this.nameInput = document.getElementById("nameInput");
           this.nameSubmit = document.getElementById("nameSubmit");
-          if (!this.userName) {
-            this.statusElement.textContent = "Welcome! Please enter your name to get started.";
-          } else {
-            this.statusElement.textContent = "Tap the mic to start voice conversation!";
-          }
+          this.clearAllHistoryButton = document.getElementById(
+            "clearAllHistoryButton"
+          );
+
+          this.updateStatus(
+            this.userName
+              ? "Tap the mic to start!"
+              : "Welcome! Please enter your name."
+          );
         }
 
         initializeSpeechRecognition() {
           const SpeechRecognition =
             window.SpeechRecognition || window.webkitSpeechRecognition;
           if (!SpeechRecognition) {
-            this.statusElement.textContent =
-              "Sorry, your browser doesn't support speech recognition.";
+            this.updateStatus(
+              "Speech recognition not supported by your browser.",
+              "error"
+            );
             return;
           }
           this.recognition = new SpeechRecognition();
-          this.recognition.continuous = true;
-          this.recognition.interimResults = true;
+          this.recognition.continuous = true; // Always true to manage restart manually
+          this.recognition.interimResults = false; // Only final results
           this.recognition.lang = "en-US";
-          this.recognition.maxAlternatives = 1;
 
           this.recognition.onstart = () => {
             this.isListening = true;
             this.micButton.classList.add("listening");
-            this.statusElement.textContent = this.isContinuousMode
-              ? "I'm listening... (continuous mode)"
-              : "Listening...";
             this.setMicAnimationState("listening");
+            if (this.mode === "live" && this.isLiveModeActive) {
+              this.updateStatus("Listening continuously...");
+            } else {
+              this.updateStatus("Listening...");
+            }
           };
 
           this.recognition.onresult = (event) => {
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-              if (event.results[i].isFinal) {
-                const transcript = event.results[i][0].transcript.trim();
-                if (transcript.length > 2) this.handleUserInput(transcript);
+            const transcript =
+              event.results[event.results.length - 1][0].transcript.trim();
+            if (transcript) {
+              if (this.mode === "record") {
+                // In record mode, we stop listening on the first final result
+                this.stopListening();
               }
+              this.handleUserInput(transcript);
             }
           };
 
           this.recognition.onerror = (event) => {
             console.error("Speech recognition error:", event.error);
-            if (event.error === "no-speech" && this.isContinuousMode) {
-              setTimeout(() => this.startListening(), 1000);
-              return;
+            if (event.error === "no-speech") {
+              this.updateStatus("Didn’t catch that, please try again.");
+            } else if (event.error !== "aborted") {
+              this.updateStatus(
+                "An error occurred with speech recognition.",
+                "error"
+              );
             }
-            if (event.error !== "aborted") {
-              this.statusElement.textContent =
-                "Something went wrong. Let's try again.";
-            }
-            if (!this.isContinuousMode) this.stopContinuousMode();
+            this.stopListening();
           };
 
           this.recognition.onend = () => {
             this.isListening = false;
             this.micButton.classList.remove("listening");
-            if (this.isContinuousMode && !this.isSpeaking) {
-              setTimeout(() => {
-                if (this.isContinuousMode && !this.isSpeaking) {
-                  this.startListening();
-                }
-              }, 500);
-            } else {
-              this.setMicAnimationState("idle");
+            this.setMicAnimationState("idle");
+            // In live mode, if it's active and we're not speaking, restart listening
+            if (
+              this.mode === "live" &&
+              this.isLiveModeActive &&
+              !this.isSpeaking
+            ) {
+              setTimeout(() => this.startListening(), 300);
             }
           };
         }
 
         initializeEventListeners() {
-          this.micButton.addEventListener("click", () =>
-            this.toggleContinuousMode()
-          );
+          this.micButton.addEventListener("click", () => this.handleMicClick());
           this.historyButton.addEventListener("click", () =>
             this.showHistory()
           );
-          this.deleteButton.addEventListener("click", () =>
-            this.showDeleteModal()
-          );
+          this.modeButton.addEventListener("click", () => this.toggleMode());
           this.voiceButton.addEventListener("click", () =>
             this.showVoiceModal()
           );
@@ -1545,285 +1476,66 @@
             .getElementById("closeHistoryModal")
             .addEventListener("click", () => this.hideModal(this.historyModal));
           document
-            .getElementById("closeDeleteModal")
-            .addEventListener("click", () => this.hideModal(this.deleteModal));
-          document
             .getElementById("closeVoiceModal")
             .addEventListener("click", () => this.hideModal(this.voiceModal));
-
-          document
-            .getElementById("selectAllButton")
-            .addEventListener("click", () => this.selectAll());
-          document
-            .getElementById("deselectAllButton")
-            .addEventListener("click", () => this.deselectAll());
-          document
-            .getElementById("deleteSelectedButton")
-            .addEventListener("click", () => this.deleteSelected());
-          document
-            .getElementById("clearAllButton")
-            .addEventListener("click", () => this.clearAll());
+          this.clearAllHistoryButton.addEventListener("click", () =>
+            this.clearAllHistory()
+          );
 
           this.initializeNameModal();
+          this.themeToggle.addEventListener("change", () =>
+            this.updateBackground()
+          );
 
           window.addEventListener("click", (event) => {
             if (event.target === this.historyModal)
               this.hideModal(this.historyModal);
-            if (event.target === this.deleteModal)
-              this.hideModal(this.deleteModal);
             if (event.target === this.voiceModal)
               this.hideModal(this.voiceModal);
           });
         }
 
-        setMicAnimationState(state) {
-          if (!this.micAnimation) return;
-          const speed = { idle: 1, listening: 1.5, speaking: 2 };
-          this.micAnimation.setSpeed(speed[state] || 1);
-        }
+        // --- Core Interaction Logic ---
 
-        // === Toggle Button Script ===
-        initializeTheme() {
-          // Initialize theme based on current time, but allow toggle override
-          const toggleInput = document.getElementById("themeToggle");
-
-          // Check current time to determine if it's day or night
-          const now = new Date();
-          const hour = now.getHours();
-          const isDayTime = hour >= 6 && hour < 18; // Day: 6 AM to 6 PM
-
-          // Set toggle based on time (not saved preference on page load)
-          toggleInput.checked = !isDayTime; // Night mode when not daytime
-          this.updateBackground();
-
-          toggleInput.addEventListener("change", () => {
-            const isNight = toggleInput.checked;
-            localStorage.setItem("toggleState", isNight);
-            this.updateBackground();
-          });
-        }
-
-        // MODIFIED: updateBackground is now driven by the toggle state
-        updateBackground() {
-          let mode = this.themeToggle.checked ? "night" : "day";
-
-          const nightSky = document.getElementById("nightSky");
-          const morningSky = document.getElementById("morningSky");
-          const sun = document.getElementById("sun");
-          const moon = document.getElementById("moon");
-          const birds = [
-            { id: "birdContainer1", duration: 26000, delay: 0 },
-            { id: "birdContainer2", duration: 22000, delay: 4000 },
-            { id: "birdContainer3", duration: 18000, delay: 8000 },
-            { id: "birdContainer4", duration: 24000, delay: 12000 },
-          ];
-
-          const isDay = mode === "day";
-          nightSky.style.display = isDay ? "none" : "block";
-          morningSky.style.display = isDay ? "block" : "none";
-
-          if (window.innerWidth > 480) {
-            document.body.style.background = isDay
-              ? "" // Let the .morning-sky div handle the background
-              : "linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 30%, #000000 100%)";
+        handleMicClick() {
+          if (this.isSpeaking) {
+            this.stopSpeaking();
+            return;
           }
 
-          document.body.style.color = isDay ? "#333" : "white";
-          document.body.classList.toggle('day-mode', isDay);
-          document.body.classList.toggle('night-mode', !isDay);
-          if (sun) sun.style.display = isDay ? "block" : "none";
-          if (moon) moon.style.display = isDay ? "none" : "block";
-
-          if (!isDay && !nightSky.querySelector(".star")) {
-            this.createStars();
-          }
-
-          if (isDay) {
-            birds.forEach((b) => {
-              const bird = document.getElementById(b.id);
-              if (bird && !bird.dataset.animating) {
-                bird.dataset.animating = "true";
-                bird.style.opacity = "1";
-                setTimeout(() => {
-                  bird.animate(
-                    [
-                      { left: "-20vw", opacity: 1 },
-                      { left: "110vw", opacity: 0.7 },
-                    ],
-                    {
-                      duration: b.duration,
-                      iterations: Infinity,
-                      easing: "linear",
-                    }
-                  );
-                }, b.delay);
-              }
-            });
-          } else {
-            birds.forEach((b) => {
-              const bird = document.getElementById(b.id);
-              if (bird) {
-                bird.getAnimations().forEach((anim) => anim.cancel());
-                bird.style.opacity = "0";
-                bird.dataset.animating = "";
-              }
-            });
-          }
-        }
-
-        createStars() {
-          const nightSky = document.getElementById("nightSky");
-          if (nightSky.querySelector(".star")) return;
-          const starSizes = ["small", "medium", "large"];
-          for (let i = 0; i < 50; i++) {
-            const star = document.createElement("div");
-            star.className = `star ${starSizes[Math.floor(Math.random() * 3)]}`;
-            star.style.left = `${Math.random() * 100}%`;
-            star.style.top = `${Math.random() * 100}%`;
-            star.style.animationDelay = `${Math.random() * 3}s`;
-            star.style.animationDuration = `${Math.random() * 2 + 2}s`;
-            nightSky.appendChild(star);
-          }
-        }
-
-        initializeBackendStatusCheck() {
-          // Check backend status immediately
-          this.checkBackendStatus();
-          
-          // Set up periodic checks every 30 seconds
-          this.statusCheckInterval = setInterval(() => {
-            this.checkBackendStatus();
-          }, 30000);
-        }
-
-        setupUserInteractionHandler() {
-          // Check if audio is already allowed by attempting to create an audio context
-          this.checkAudioPermissions();
-          
-          const enableAudioOnInteraction = () => {
-            if (!this.hasUserInteracted) {
-              this.hasUserInteracted = true;
-              // Initialize audio context for better browser compatibility
-              if (this.synthesis && this.synthesis.cancel) {
-                this.synthesis.cancel();
-              }
-              // If there's a pending welcome message, speak it now
-              if (this.pendingWelcomeMessage) {
-                // Remove the interaction hint from display
-                if (this.statusElement.textContent.includes("(Click anywhere to enable voice)")) {
-                  this.statusElement.textContent = this.statusElement.textContent.replace(" (Click anywhere to enable voice)", "");
-                }
-                setTimeout(() => {
-                  this.speak(this.pendingWelcomeMessage);
-                  this.pendingWelcomeMessage = null;
-                }, 500);
-              }
-              // Remove the event listeners after first interaction
-              document.removeEventListener('click', enableAudioOnInteraction);
-              document.removeEventListener('touchstart', enableAudioOnInteraction);
-              document.removeEventListener('keydown', enableAudioOnInteraction);
-            }
-          };
-          
-          // Add multiple event listeners to catch any user interaction
-          document.addEventListener('click', enableAudioOnInteraction);
-          document.addEventListener('touchstart', enableAudioOnInteraction);
-          document.addEventListener('keydown', enableAudioOnInteraction);
-        }
-
-        async checkAudioPermissions() {
-          try {
-            // Check if we can create an AudioContext without user interaction
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            
-            if (audioContext.state === 'running') {
-              // Audio is already allowed, enable interaction immediately
-              this.hasUserInteracted = true;
-              
-              // Speak welcome message immediately if we have one
-              if (this.pendingWelcomeMessage) {
-                // Remove the interaction hint from display
-                if (this.statusElement.textContent.includes("(Click anywhere to enable voice)")) {
-                  this.statusElement.textContent = this.statusElement.textContent.replace(" (Click anywhere to enable voice)", "");
-                }
-                setTimeout(() => {
-                  this.speak(this.pendingWelcomeMessage);
-                  this.pendingWelcomeMessage = null;
-                }, 1000);
-              }
-            } else if (audioContext.state === 'suspended') {
-              // Try to resume the audio context
-              try {
-                await audioContext.resume();
-                if (audioContext.state === 'running') {
-                  this.hasUserInteracted = true;
-                  
-                  if (this.pendingWelcomeMessage) {
-                    if (this.statusElement.textContent.includes("(Click anywhere to enable voice)")) {
-                      this.statusElement.textContent = this.statusElement.textContent.replace(" (Click anywhere to enable voice)", "");
-                    }
-                    setTimeout(() => {
-                      this.speak(this.pendingWelcomeMessage);
-                      this.pendingWelcomeMessage = null;
-                    }, 1000);
-                  }
-                }
-              } catch (error) {
-                console.log('Audio context resume failed, user interaction required');
-              }
-            }
-            
-            // Close the audio context as we only needed it for testing
-            audioContext.close();
-          } catch (error) {
-            console.log('Audio permission check failed:', error);
-          }
-        }
-
-        async checkBackendStatus() {
-          try {
-            this.updateStatusIndicator('checking', 'Checking...');
-            
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-            
-            const response = await fetch(`${this.backendUrl}/health`, {
-              method: 'GET',
-              signal: controller.signal,
-              headers: {
-                'Accept': 'application/json'
-              }
-            });
-            
-            clearTimeout(timeoutId);
-            
-            if (response.ok) {
-              this.isBackendOnline = true;
-              this.updateStatusIndicator('online', 'Live');
+          if (this.mode === "live") {
+            this.isLiveModeActive = !this.isLiveModeActive; // Toggle live session
+            if (this.isLiveModeActive) {
+              this.micButton.classList.add("live-mode-active");
+              this.startListening();
             } else {
-              throw new Error(`HTTP ${response.status}`);
+              this.micButton.classList.remove("live-mode-active");
+              this.stopListening();
+              this.updateStatus("Live mode off. Tap mic to speak.");
             }
-          } catch (error) {
-            this.isBackendOnline = false;
-            this.updateStatusIndicator('offline', 'Offline');
-            console.log('Backend status check failed:', error.message);
+          } else {
+            // Record mode
+            if (this.isListening) {
+              this.stopListening();
+            } else {
+              this.startListening();
+            }
           }
         }
 
-        updateStatusIndicator(status, text) {
-          this.statusIndicator.className = `status-indicator ${status}`;
-          this.statusTextIndicator.textContent = text;
-        }
+        toggleMode() {
+          this.stopListening();
+          this.isLiveModeActive = false;
+          this.micButton.classList.remove("live-mode-active");
 
-        toggleContinuousMode() {
-          this.isSpeaking && this.stopSpeaking();
-          this.isContinuousMode = !this.isContinuousMode;
-          if (this.isContinuousMode) {
-            this.statusElement.textContent = "Starting continuous conversation...";
-            this.micButton.classList.add("continuous-mode");
-            setTimeout(() => this.startListening(), 500);
+          if (this.mode === "live") {
+            this.mode = "record";
+            this.modeButton.innerHTML = `🎙️ <span>Record</span>`;
+            this.updateStatus("Record Mode: Tap and hold mic to speak.");
           } else {
-            this.stopContinuousMode();
+            this.mode = "live";
+            this.modeButton.innerHTML = `🔴 <span>Live</span>`;
+            this.updateStatus("Live Mode: Tap mic to start continuous chat.");
           }
         }
 
@@ -1833,111 +1545,87 @@
               this.recognition.start();
             } catch (e) {
               console.error("Error starting recognition:", e);
+              this.stopListening(); // Reset state on error
             }
           }
         }
 
-        stopContinuousMode() {
-          this.isContinuousMode = false;
+        stopListening() {
+          if (this.recognition && this.isListening) {
+            this.recognition.stop();
+          }
           this.isListening = false;
-          this.micButton.classList.remove(
-            "listening",
-            "speaking",
-            "continuous-mode"
-          );
-          this.statusElement.textContent = "Tap to start voice conversation again!";
-          this.setMicAnimationState("idle");
-          this.recognition?.stop();
+          this.micButton.classList.remove("listening");
         }
 
         async handleUserInput(userInput) {
-          // Check for change name command
-          const changeNameRegex = /^hello rhynoix ai change my name - (.+)$/i;
-          const match = userInput.match(changeNameRegex);
-          if (match) {
-            const newName = match[1].trim();
-            this.saveUserName(newName);
-            this.speak(`Got it! I'll call you ${newName} from now on.`);
-            return;
+          // Frontend word limit check for live mode
+          if (this.mode === "live") {
+            const wordCount = userInput.split(/\s+/).filter(Boolean).length;
+            if (wordCount > 25) {
+              this.updateStatus(
+                `That's a bit long for live mode (${wordCount}/25 words). Try record mode.`,
+                "warning"
+              );
+              return;
+            }
           }
 
-          this.statusElement.textContent = `You said: "${userInput}"`;
-          const cachedResponse = this.findSimilarConversation(userInput);
-          if (cachedResponse) {
-            const prefix = "Like I mentioned earlier, ";
-            this.speak(prefix + cachedResponse.ai);
-            return;
-          }
-
+          this.updateStatus(`You said: "${userInput}"`);
           this.typingDots.style.display = "block";
-          this.statusElement.textContent = "Thinking...";
 
           try {
-            console.log("Making request to backend with:", userInput);
-            
             const response = await fetch(`${this.backendUrl}/ask`, {
               method: "POST",
-              headers: { 
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-              },
-              body: JSON.stringify({ text: userInput, userName: this.userName }),
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                text: userInput,
+                userName: this.userName,
+                mode: this.mode,
+              }),
             });
-
-            console.log("Response status:", response.status);
-            console.log("Response headers:", response.headers);
-
-            if (!response.ok) {
-              const errorText = await response.text();
-              console.error("Server error response:", errorText);
-              throw new Error(`API error: ${response.status} - ${response.statusText}. Details: ${errorText}`);
-            }
 
             const data = await response.json();
-            console.log("Received response:", data);
 
-            if (!data.reply) {
-              throw new Error("No reply received from server");
+            if (!response.ok) {
+              // Handle 400s (validation) and 429s (rate limit)
+              if (response.status === 429) {
+                this.updateStatus(data.reply, "warning");
+                this.stopListening();
+                this.isLiveModeActive = false;
+                this.micButton.classList.remove("live-mode-active");
+                setTimeout(() => {
+                  if (this.mode === "live") {
+                    this.updateStatus("Live mode paused. Tap mic to resume.");
+                  } else {
+                    this.updateStatus("Tap mic to speak again.");
+                  }
+                }, 3000);
+              } else {
+                // 400 errors (validation like 'speak clearly')
+                this.updateStatus(data.reply, "warning");
+              }
+              return;
             }
 
-            this.conversations.push({
-              id: Date.now(),
-              user: userInput,
-              ai: data.reply,
-            });
-            this.saveConversations();
             this.speak(data.reply);
           } catch (error) {
-            console.error("Detailed error information:", {
-              message: error.message,
-              stack: error.stack,
-              name: error.name
-            });
-            
-            // More specific error messages
-            if (error.name === 'TypeError' && error.message.includes('fetch')) {
-              this.speak("I can't connect to my brain right now. Please check if the server is running.");
-            } else if (error.message.includes('500')) {
-              this.speak("I'm having a server problem. Let me check my systems.");
-            } else if (error.message.includes('CORS')) {
-              this.speak("There's a connection security issue. Let me try to fix that.");
-            } else {
-              this.speak("Sorry, I'm having trouble processing that right now. Can you try again?");
-            }
+            console.error("Fetch error:", error);
+            this.updateStatus(
+              "AI is having trouble right now. Please try again later.",
+              "error"
+            );
           } finally {
             this.typingDots.style.display = "none";
           }
         }
 
         speak(text) {
-          if (!text) return;
-          
-          // If user hasn't interacted yet, store the message for later
-          if (!this.hasUserInteracted) {
-            this.pendingWelcomeMessage = text;
+          if (!text || !this.hasUserInteracted) {
+            if (!this.hasUserInteracted) this.pendingWelcomeMessage = text;
             return;
           }
-          
+
           this.stopSpeaking();
 
           const utterance = new SpeechSynthesisUtterance(text);
@@ -1953,27 +1641,18 @@
           utterance.onstart = () => {
             this.isSpeaking = true;
             this.micButton.classList.add("speaking");
-            this.statusElement.textContent = "Speaking...";
+            this.updateStatus("Speaking...");
             this.setMicAnimationState("speaking");
-            // Remove the interaction hint from display
-            if (this.statusElement.textContent.includes("(Click anywhere to enable voice)")) {
-              this.statusElement.textContent = this.statusElement.textContent.replace(" (Click anywhere to enable voice)", "");
-            }
           };
 
           utterance.onend = () => {
             this.isSpeaking = false;
             this.micButton.classList.remove("speaking");
             this.setMicAnimationState("idle");
-            if (this.isContinuousMode) {
-              this.statusElement.textContent =
-                "I'm listening for your response...";
-              setTimeout(() => {
-                if (this.isContinuousMode && !this.isSpeaking)
-                  this.startListening();
-              }, 800);
+            if (this.mode === "live" && this.isLiveModeActive) {
+              // Restart is handled by recognition.onend
             } else {
-              this.statusElement.textContent = "Tap the mic to continue talking with me!";
+              this.updateStatus("Tap the mic to speak again.");
             }
           };
 
@@ -1986,6 +1665,24 @@
           this.micButton.classList.remove("speaking");
         }
 
+        // --- UI and State Management ---
+
+        updateStatus(text, type = "info") {
+          this.statusElement.textContent = text;
+          this.statusElement.className = "status-text"; // Reset class
+          if (type === "error") {
+            this.statusElement.classList.add("error-text");
+          } else if (type === "warning") {
+            this.statusElement.classList.add("warning-text");
+          }
+        }
+
+        setMicAnimationState(state) {
+          if (!this.micAnimation) return;
+          const speed = { idle: 1, listening: 1.5, speaking: 2 };
+          this.micAnimation.setSpeed(speed[state] || 1);
+        }
+
         showModal(modal) {
           modal.style.display = "flex";
         }
@@ -1993,58 +1690,57 @@
           modal.style.display = "none";
         }
 
-        showHistory() {
+        async showHistory() {
           const content = document.getElementById("historyContent");
-          content.innerHTML =
-            this.conversations.length === 0
-              ? `<div class="empty-history">No conversations yet.</div>`
-              : [...this.conversations]
-                  .reverse()
-                  .map(
-                    (conv) => `
-              <div class="history-item">
-                <div class="history-user">You: ${conv.user}</div>
-                <div class="history-ai">Jarvis: ${conv.ai}</div>
-              </div>`
-                  )
-                  .join("");
+          content.innerHTML = `<div class="empty-history">Loading history...</div>`;
           this.showModal(this.historyModal);
+
+          try {
+            const response = await fetch(`${this.backendUrl}/history`);
+            if (!response.ok) throw new Error("Failed to fetch history");
+
+            const data = await response.json();
+
+            if (data.history && data.history.length > 0) {
+              content.innerHTML = data.history
+                .map(
+                  (conv) => `
+                        <div class="history-item">
+                            <div class="history-user">You: ${conv.user}</div>
+                            <div class="history-ai">AI: ${conv.ai}</div>
+                        </div>`
+                )
+                .join("");
+            } else {
+              content.innerHTML = `<div class="empty-history">No conversations yet.</div>`;
+            }
+          } catch (error) {
+            console.error("Error fetching history:", error);
+            content.innerHTML = `<div class="empty-history error-text">Could not load history.</div>`;
+          }
         }
 
-        showDeleteModal() {
-          this.selectedItems.clear();
-          const content = document.getElementById("deleteContent");
-          content.innerHTML =
-            this.conversations.length === 0
-              ? `<div class="empty-history">No conversations to delete.</div>`
-              : [...this.conversations]
-                  .reverse()
-                  .map(
-                    (conv) => `
-              <div class="checkbox-item">
-                <input type="checkbox" id="conv-${conv.id}" data-id="${conv.id}">
-                <label for="conv-${conv.id}" class="history-item" style="margin-bottom: 0; flex: 1;">
-                  <div class="history-user">You: ${conv.user}</div>
-                  <div class="history-ai">Jarvis: ${conv.ai}</div>
-                </label>
-              </div>`
-                  )
-                  .join("");
-          content
-            .querySelectorAll('input[type="checkbox"]')
-            .forEach((checkbox) => {
-              checkbox.addEventListener("change", (e) => {
-                const id = parseInt(e.target.dataset.id);
-                e.target.checked
-                  ? this.selectedItems.add(id)
-                  : this.selectedItems.delete(id);
-              });
-            });
-          this.showModal(this.deleteModal);
+        async clearAllHistory() {
+          if (
+            !confirm(
+              "Are you sure you want to delete all conversation history from the server?"
+            )
+          )
+            return;
+          try {
+            const response = await fetch(`${this.backendUrl}/clear-history`);
+            if (!response.ok) throw new Error("Failed to clear history");
+
+            this.updateStatus("History cleared successfully.", "info");
+            this.hideModal(this.historyModal);
+          } catch (error) {
+            console.error("Error clearing history:", error);
+            alert("Could not clear history. Please try again.");
+          }
         }
 
         showVoiceModal() {
-          this.populateVoiceList(); // Re-populate in case voices loaded after initial setup
+          this.populateVoiceList();
           this.showModal(this.voiceModal);
         }
 
@@ -2070,107 +1766,109 @@
             item.addEventListener("click", () => {
               this.selectedVoiceName = item.dataset.name;
               this.saveVoicePreference(this.selectedVoiceName);
-              // Update UI selection
               voiceList
                 .querySelector(".selected")
                 ?.classList.remove("selected");
               item.classList.add("selected");
-              // Speak a sample and close
               this.speak("I'll use this voice from now on.");
               setTimeout(() => this.hideModal(this.voiceModal), 1500);
             });
           });
         }
 
-        selectAll() {
-          document
-            .querySelectorAll('#deleteContent input[type="checkbox"]')
-            .forEach((cb) => {
-              cb.checked = true;
-              this.selectedItems.add(parseInt(cb.dataset.id));
-            });
+        // --- Initialization and Setup ---
+
+        initializeTheme() {
+          const isNightTime =
+            new Date().getHours() < 6 || new Date().getHours() >= 18;
+          this.themeToggle.checked = isNightTime;
+          this.updateBackground();
         }
 
-        deselectAll() {
-          document
-            .querySelectorAll('#deleteContent input[type="checkbox"]')
-            .forEach((cb) => (cb.checked = false));
-          this.selectedItems.clear();
-        }
-
-        deleteSelected() {
-          if (
-            this.selectedItems.size > 0 &&
-            confirm(
-              `Delete ${this.selectedItems.size} selected conversation(s)?`
-            )
-          ) {
-            this.conversations = this.conversations.filter(
-              (conv) => !this.selectedItems.has(conv.id)
-            );
-            this.saveConversations();
-            this.showDeleteModal();
+        updateBackground() {
+          const isNight = this.themeToggle.checked;
+          document.getElementById("nightSky").style.display = isNight
+            ? "block"
+            : "none";
+          document.getElementById("morningSky").style.display = isNight
+            ? "none"
+            : "block";
+          if (!isNight && !document.querySelector("#nightSky .star")) {
+            this.createStars();
           }
         }
 
-        clearAll() {
-          if (
-            this.conversations.length > 0 &&
-            confirm("Delete all conversations? This cannot be undone.")
-          ) {
-            this.conversations = [];
-            this.saveConversations();
-            this.hideModal(this.deleteModal);
+        createStars() {
+          const nightSky = document.getElementById("nightSky");
+          if (nightSky.querySelector(".star")) return; // Don't create if they exist
+          const starSizes = ["small", "medium", "large"];
+          for (let i = 0; i < 50; i++) {
+            const star = document.createElement("div");
+            star.className = `star ${starSizes[Math.floor(Math.random() * 3)]}`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 3}s`;
+            nightSky.appendChild(star);
           }
         }
 
-        loadConversations() {
-          return JSON.parse(
-            localStorage.getItem("jarvis-conversations") || "[]"
-          );
+        initializeBackendStatusCheck() {
+          const checkStatus = async () => {
+            try {
+              this.updateStatusIndicator("checking", "Checking...");
+              const response = await fetch(`${this.backendUrl}/health`);
+              if (response.ok) {
+                this.isBackendOnline = true;
+                this.updateStatusIndicator("online", "Live");
+              } else {
+                throw new Error("Backend not healthy");
+              }
+            } catch (error) {
+              this.isBackendOnline = false;
+              this.updateStatusIndicator("offline", "Offline");
+            }
+          };
+          checkStatus();
+          this.statusCheckInterval = setInterval(checkStatus, 30000);
         }
-        saveConversations() {
-          localStorage.setItem(
-            "jarvis-conversations",
-            JSON.stringify(this.conversations)
-          );
+
+        updateStatusIndicator(status, text) {
+          this.statusIndicator.className = `status-indicator ${status}`;
+          this.statusTextIndicator.textContent = text;
         }
+
+        setupUserInteractionHandler() {
+          const enableAudio = () => {
+            if (!this.hasUserInteracted) {
+              this.hasUserInteracted = true;
+              this.synthesis?.cancel(); // Initialize synthesis
+              if (this.pendingWelcomeMessage) {
+                this.updateStatus(
+                  this.pendingWelcomeMessage.replace(
+                    " (Click anywhere to enable voice)",
+                    ""
+                  )
+                );
+                this.speak(this.pendingWelcomeMessage);
+                this.pendingWelcomeMessage = null;
+              }
+              document.removeEventListener("click", enableAudio);
+              document.removeEventListener("keydown", enableAudio);
+            }
+          };
+          document.addEventListener("click", enableAudio);
+          document.addEventListener("keydown", enableAudio);
+        }
+
         loadVoicePreference() {
           return localStorage.getItem("jarvis-voice") || "";
         }
         saveVoicePreference(voiceName) {
           localStorage.setItem("jarvis-voice", voiceName);
         }
-
-        findSimilarConversation(userInput) {
-          const normalizedInput = userInput.toLowerCase().trim();
-          const inputWords = normalizedInput
-            .split(/\s+/)
-            .filter((w) => w.length > 2);
-          for (const conv of this.conversations) {
-            const convWords = conv.user
-              .toLowerCase()
-              .split(/\s+/)
-              .filter((w) => w.length > 2);
-            const commonWords = inputWords.filter((word) =>
-              convWords.includes(word)
-            );
-            if (
-              commonWords.length > 0 &&
-              commonWords.length /
-                Math.max(inputWords.length, convWords.length) >
-                0.6
-            ) {
-              return conv;
-            }
-          }
-          return null;
-        }
-
         loadUserName() {
           return localStorage.getItem("jarvis-user-name") || "";
         }
-
         saveUserName(name) {
           localStorage.setItem("jarvis-user-name", name);
           this.userName = name;
@@ -2182,46 +1880,28 @@
         }
 
         setWelcomeMessage() {
-          const welcomes = [
-            `Hello ${this.userName}! Welcome to Rhyniox AI, your personal voice assistant. How can I help you today?`,
-            `Hey there ${this.userName}! I'm Rhyniox AI, ready to assist you with anything you need. What's on your mind?`,
-            `Welcome back ${this.userName}! Your intelligent voice companion is here and excited to chat with you!`,
-            `Hi ${this.userName}! Rhyniox AI at your service. I'm here to make your day better with great conversation!`,
-            `Greetings ${this.userName}! I'm thrilled you're here. Let's have an amazing voice conversation together!`,
-            `Good to see you ${this.userName}! I'm Rhyniox AI, your friendly voice assistant. What would you like to explore today?`,
-            `Hello ${this.userName}! Ready for some intelligent conversation? I'm here to help with anything you need!`,
-            `Hey ${this.userName}! Your personal AI companion is online and excited to talk. How are you doing today?`,
-            `Welcome ${this.userName}! I'm Rhyniox AI, and I can't wait to assist you with questions, conversations, or just having fun!`,
-            `Hi there ${this.userName}! Your voice assistant is ready to engage in meaningful conversation. What brings you here today?`
-          ];
-          const randomWelcome = welcomes[Math.floor(Math.random() * welcomes.length)];
-          this.statusElement.textContent = randomWelcome + " (Click anywhere to enable voice)";
-          
-          // Store the welcome message to speak after user interaction
-          this.pendingWelcomeMessage = randomWelcome;
-          
-          // If user has already interacted, speak immediately
+          const welcomeMessage = `Hello ${this.userName}! How can I help you today?`;
+          this.updateStatus(
+            welcomeMessage + " (Click anywhere to enable voice)"
+          );
+          this.pendingWelcomeMessage = welcomeMessage;
           if (this.hasUserInteracted) {
-            setTimeout(() => {
-              this.speak(randomWelcome);
-            }, 1500);
+            setTimeout(() => this.speak(welcomeMessage), 1500);
           }
         }
 
         initializeNameModal() {
-          this.nameSubmit.addEventListener("click", () => {
+          const submit = () => {
             const name = this.nameInput.value.trim();
             if (name) {
               this.saveUserName(name);
               this.nameModal.style.display = "none";
               this.setWelcomeMessage();
             }
-          });
-
+          };
+          this.nameSubmit.addEventListener("click", submit);
           this.nameInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-              this.nameSubmit.click();
-            }
+            if (e.key === "Enter") submit();
           });
         }
       }
